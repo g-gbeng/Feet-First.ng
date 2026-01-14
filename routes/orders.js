@@ -13,7 +13,6 @@ router.post('/create', async (req, res) => {
   }
 });
 
-// Get all orders for a user
 router.get('/:userId', async (req, res) => {
   try {
     const orders = await Order.find({ userId: req.params.userId }).populate('items.productId');
