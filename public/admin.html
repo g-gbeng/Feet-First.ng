@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard – Feet-First.ng</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap -->
+  <link
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <style>
+    body {
+      background: #f8f9fa;
+    }
+
+    .card {
+      border-radius: 0.75rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    h3 {
+      font-weight: 700;
+    }
+
+    .search-input {
+      max-width: 300px;
+    }
+
+    .badge-status {
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 768px) {
+      table {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container my-5">
+
+  <!-- HEADER -->
+  <div class="mb-4 text-center">
+    <h2>Admin Dashboard</h2>
+    <p class="text-muted">Feet-First.ng Management Panel</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="row mb-4">
+    <div class="col-md-4 mb-3">
+      <div class="card p-3 text-center">
+        <h5>Total Users</h5>
+        <h3 id="totalUsers">0</h3>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card p-3 text-center">
+        <h5>Total Orders</h5>
+        <h3 id="totalOrders">0</h3>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card p-3 text-center">
+        <h5>Total Revenue</h5>
+        <h3 id="totalRevenue">₦0.00</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- USERS -->
+  <div class="card p-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3>Registered Users</h3>
+      <input
+        type="text"
+        id="userSearch"
+        class="form-control search-input"
+        placeholder="Search users..."
+      />
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead class="thead-dark">
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody id="usersTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ORDERS -->
+  <div class="card p-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3>Orders</h3>
+      <input
+        type="text"
+        id="orderSearch"
+        class="form-control search-input"
+        placeholder="Search orders..."
+      />
+    </div>
+
+    <!-- Pending Orders -->
+    <h5 class="mt-3">Pending Orders</h5>
+    <div class="table-responsive mb-4">
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th>#</th>
+            <th>Customer</th>
+            <th>Email</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="pendingOrders"></tbody>
+      </table>
+    </div>
+
+    <!-- Completed Orders -->
+    <h5>Completed Orders</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th>#</th>
+            <th>Customer</th>
+            <th>Email</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="completedOrders"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Currency formatter (₦ with commas)
+  const formatNaira = (amount) => {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN',
+    }).format(amount);
+  };
+
+  let users = [];
+  let orders = [];
+
+  async function loadDashboard() {
+    const res = await fetch('/api/admin/dashboard');
+    const data = await res.json();
+
+    users = data.users;
+    orders = data.orders;
+
+    renderUsers(users);
+    renderOrders(orders);
+
+    document.getElementById('totalUsers').textContent = users.length;
+    document.getElementById('totalOrders').textContent = orders.length;
+
+    const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+    document.getElementById('totalRevenue').textContent = formatNaira(totalRevenue);
+  }
+
+  function renderUsers(list) {
+    const tbody = document.getElementById('usersTable');
+    tbody.innerHTML = '';
+
+    list.forEach((user, i) => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${user.name}</td>
+          <td>${user.email}</td>
+        </tr>
+      `;
+    });
+  }
+
+  function renderOrders(list) {
+    const pending = document.getElementById('pendingOrders');
+    const completed = document.getElementById('completedOrders');
+
+    pending.innerHTML = '';
+    completed.innerHTML = '';
+
+    list.forEach((order, i) => {
+      const row = `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${order.user.name}</td>
+          <td>${order.user.email}</td>
+          <td>${order.items.map(i => i.name).join(', ')}</td>
+          <td>${formatNaira(order.total)}</td>
+          <td>
+            <span class="badge badge-${order.status === 'pending' ? 'warning' : 'success'} badge-status">
+              ${order.status}
+            </span>
+          </td>
+        </tr>
+      `;
+
+      if (order.status === 'pending') {
+        pending.innerHTML += row;
+      } else {
+        completed.innerHTML += row;
+      }
+    });
+  }
+
+  // Search filters
+  document.getElementById('userSearch').addEventListener('input', (e) => {
+    const value = e.target.value.toLowerCase();
+    renderUsers(
+      users.filter(u =>
+        u.name.toLowerCase().includes(value) ||
+        u.email.toLowerCase().includes(value)
+      )
+    );
+  });
+
+  document.getElementById('orderSearch').addEventListener('input', (e) => {
+    const value = e.target.value.toLowerCase();
+    renderOrders(
+      orders.filter(o =>
+        o.user.name.toLowerCase().includes(value) ||
+        o.user.email.toLowerCase().includes(value)
+      )
+    );
+  });
+
+  loadDashboard();
+</script>
+
+</body>
+</html>

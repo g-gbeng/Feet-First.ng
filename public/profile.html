@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Profile | Feet-First.ng</title>
+
+  <!-- Bootstrap -->
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+  />
+
+  <style>
+    body {
+      background-image: url("images/IMG_9582.JPG");
+      background-size: cover;
+      background-attachment: fixed;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.7s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .profile-card {
+      background: rgba(0, 0, 0, 0.75);
+      border-radius: 12px;
+      padding: 30px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: bold;
+      margin: 0 auto 15px;
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .upload-btn {
+      font-size: 14px;
+      cursor: pointer;
+      color: #f8c146;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+
+    .profile-info {
+      margin-top: 15px;
+    }
+
+    .profile-info p {
+      margin: 5px 0;
+      opacity: 0.9;
+    }
+
+    .btn-dashboard {
+      margin-top: 20px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="profile-card fade-in">
+    <div class="avatar" id="avatar"></div>
+
+    <label class="upload-btn">
+      Change profile picture
+      <input type="file" id="imageInput" accept="image/*" />
+    </label>
+
+    <div class="profile-info">
+      <p><strong id="userName"></strong></p>
+      <p id="userEmail"></p>
+    </div>
+
+    <button class="btn btn-outline-light btn-dashboard" onclick="goBack()">
+      Back to Dashboard
+    </button>
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+      window.location.href = "login.html";
+    }
+
+    const avatar = document.getElementById("avatar");
+    const nameEl = document.getElementById("userName");
+    const emailEl = document.getElementById("userEmail");
+    const imageInput = document.getElementById("imageInput");
+
+    const initials = user.name
+      .split(" ")
+      .map(n => n[0])
+      .join("")
+      .toUpperCase();
+
+    function renderAvatar() {
+      if (user.profileImage) {
+        avatar.innerHTML = `<img src="${user.profileImage}" />`;
+      } else {
+        avatar.textContent = initials;
+      }
+    }
+
+    renderAvatar();
+
+    nameEl.textContent = user.name;
+    emailEl.textContent = user.email;
+
+    imageInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        user.profileImage = reader.result;
+        localStorage.setItem("user", JSON.stringify(user));
+        renderAvatar();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function goBack() {
+      window.location.href = "dashboard.html";
+    }
+  </script>
+
+</body>
+</html>

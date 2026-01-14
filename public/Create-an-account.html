@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup - Feet-First.ng</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("images/IMG_9581.JPG") no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 1s forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .signup-card {
+      background: rgba(0,0,0,0.7);
+      padding: 2rem;
+      border-radius: 1rem;
+      max-width: 450px;
+      margin: 3rem auto;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+    }
+
+    .signup-card h2 {
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+     .signup-card h1 {
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+
+    .form-control:focus {
+      box-shadow: none;
+      border-color: #ffc107;
+    }
+
+    .btn-custom {
+      background-color: #ffd700;
+      color: #000;
+      font-weight: bold;
+      width: 100%;
+    }
+
+    .btn-custom:hover {
+      background-color: #ffc107;
+      color: #000;
+    }
+
+    .text-danger {
+      font-size: 0.9rem;
+    }
+
+    a {
+      color: #ffd700;
+    }
+
+    a:hover {
+      text-decoration: none;
+      color: #ffc107;
+    }
+    .toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 38px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #ffd700;
+  user-select: none;
+}
+
+.toggle-password:hover {
+  color: #ffc107;
+}
+
+  </style>
+</head>
+<body>
+
+<div class="fade-in">
+  <div class="signup-card">
+    <h1>Feet-First.ng</h1>
+    <h2>Create Account</h2>
+    <form id="signupForm">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" class="form-control" placeholder="Enter your full name" required>
+        <div class="text-danger" id="nameError"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+        <div class="text-danger" id="emailError"></div>
+      </div>
+
+      <div class="form-group position-relative">
+  <label for="password">Password</label>
+  <input
+    type="password"
+    id="password"
+    class="form-control pr-5"
+    placeholder="At least 8 characters, number & special char"
+    required
+  />
+
+  <span
+    class="toggle-password"
+    onclick="togglePassword('password', this)"
+  >
+    👁
+  </span>
+
+  <div class="text-danger" id="passwordError"></div>
+</div>
+
+
+      <div class="form-group position-relative">
+  <label for="confirmPassword">Confirm Password</label>
+  <input
+    type="password"
+    id="confirmPassword"
+    class="form-control pr-5"
+    placeholder="Re-enter your password"
+    required
+  />
+
+  <span
+    class="toggle-password"
+    onclick="togglePassword('confirmPassword', this)"
+  >
+    👁
+  </span>
+
+  <div class="text-danger" id="confirmError"></div>
+</div>
+
+
+      <button type="submit" class="btn btn-custom mt-3">Sign Up</button>
+      <p class="mt-3 text-center">Already have an account? <a href="/login.html">Login here</a></p>
+    </form>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+  const form = document.getElementById('signupForm');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Clear previous errors
+    document.getElementById('nameError').textContent = '';
+    document.getElementById('emailError').textContent = '';
+    document.getElementById('passwordError').textContent = '';
+    document.getElementById('confirmError').textContent = '';
+
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    let valid = true;
+
+    // Name validation
+    if (!name) {
+      document.getElementById('nameError').textContent = 'Please enter your name.';
+      valid = false;
+    }
+
+    // Email validation
+    if (!email) {
+      document.getElementById('emailError').textContent = 'Please enter your email.';
+      valid = false;
+    }
+
+    // Password validation
+    const passwordPattern = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/;
+    if (!passwordPattern.test(password)) {
+      document.getElementById('passwordError').textContent = 'Password must be at least 8 characters, include a number and a special character.';
+      valid = false;
+    }
+
+    // Confirm password
+    if (password !== confirmPassword) {
+      document.getElementById('confirmError').textContent = 'Passwords do not match.';
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    try {
+      const res = await fetch('/api/users/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.message);
+        window.location.href = 'login.html';
+      } else {
+        // Display backend error messages
+        if (data.message.includes('Email')) {
+          document.getElementById('emailError').textContent = data.message;
+        } else if (data.message.includes('Password')) {
+          document.getElementById('passwordError').textContent = data.message;
+        } else {
+          alert(data.message || 'Signup failed.');
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Server error. Try again later.');
+    }
+  });
+  function togglePassword(inputId, icon) {
+    const input = document.getElementById(inputId);
+
+    if (input.type === "password") {
+      input.type = "text";
+      icon.textContent = "👁";
+    } else {
+      input.type = "password";
+      icon.textContent = "👁";
+    }
+  }
+</script>
+
+
+
+</body>
+</html>

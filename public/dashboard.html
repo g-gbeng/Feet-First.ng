@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Dashboard | Feet-First.ng</title>
+
+  <!-- Bootstrap -->
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+  />
+
+  <!-- Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+
+  <style>
+    body {
+      background-image: url("images/IMG_9582.JPG");
+      background-size: cover;
+      background-attachment: fixed;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Fade-in animation */
+    .fade-in {
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Header */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      color: #fff;
+    }
+
+    /* Profile avatar */
+    .avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #343a40;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 280px;
+      height: 100%;
+      background: #111;
+      color: #fff;
+      transition: 0.3s ease;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .sidebar-header .avatar {
+      margin-right: 10px;
+    }
+
+    .sidebar a {
+      color: #fff;
+      display: block;
+      padding: 12px 0;
+      text-decoration: none;
+    }
+
+    .sidebar a:hover {
+      color: #f8c146;
+    }
+
+    .menu-btn {
+      font-size: 22px;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    /* Product cards */
+    .shoe {
+      height: 150px;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: transform 0.2s ease;
+    }
+
+    .shoe:hover {
+      transform: translateY(-4px);
+    }
+
+    footer {
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="avatar" id="sidebarAvatar"></div>
+      <div>
+        <strong id="sidebarName"></strong>
+      </div>
+    </div>
+
+    <a href="profile.html"><i class="fa fa-user"></i> Profile</a>
+    <a href="#" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Logout</a>
+  </div>
+
+  <!-- Header -->
+  <div class="dashboard-header fade-in">
+    <span class="menu-btn" onclick="toggleSidebar()">
+      <i class="fa fa-bars"></i>
+    </span>
+
+    <h5 id="welcomeText"></h5>
+
+    <div class="avatar" onclick="goToProfile()" id="topAvatar"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container text-white fade-in">
+    <h1>Feet-first.ng</h1>
+    <h4>An overview of our currently available products</h4>
+
+    <div class="row mt-4">
+
+      <!-- Product cards (unchanged structure) -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="shoe bg-danger">
+          <a href="nike-section.html" class="text-white">
+            <h4>Nike</h4>
+            <p>Size: 8–10</p>
+            <p>Air Force 1s & Air Max</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="shoe bg-light text-dark">
+          <a href="adidas-section.html" class="text-dark">
+            <h4>Adidas</h4>
+            <p>Size: 7–10</p>
+            <p>Multiple categories</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="shoe bg-warning text-white">
+          <a href="puma-section.html" class="text-white">
+            <h4>Puma</h4>
+            <p>Size: 7–10</p>
+            <p>Multiple categories</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="shoe bg-secondary text-white">
+          <a href="newbalance-section.html" class="text-white">
+            <h4>New Balance</h4>
+            <p>Size: 7–10</p>
+            <p>Multiple categories</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="shoe bg-secondary">
+          <a href="dunk-section.html" class="text-white">
+            <h4>Dunk</h4>
+            <p>Size: 7–10</p>
+            <p>Multiple categories</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="shoe bg-light text-dark">
+          <a href="vans-section.html" class="text-dark">
+            <h4>Vans</h4>
+            <p>Size: 7–10</p>
+            <p>Multiple categories</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="shoe bg-danger text-white">
+          <a href="SB-section.html" class="text-white">
+            <h4>Nike SB's</h4>
+            <p>Size: 7–10</p>
+            <p>Multiple categories</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="shoe bg-warning text-white">
+          <a href="jordan-section.html" class="text-white">
+            <h4>Jordan</h4>
+            <p>Size: 7–10</p>
+            <p>Multiple categories</p>
+          </a>
+        </div>
+      </div>
+
+      
+
+    </div>
+
+    <footer class="text-center mt-5">
+      <p>&copy; Feet-First.ng</p>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+      window.location.href = "login.html";
+    }
+
+    const initials = user.name
+      .split(" ")
+      .map(n => n[0])
+      .join("")
+      .toUpperCase();
+
+    document.getElementById("welcomeText").textContent =
+      `Welcome, ${user.name}`;
+
+    function setAvatar(el) {
+      if (user.profileImage) {
+        el.innerHTML = `<img src="${user.profileImage}" />`;
+      } else {
+        el.textContent = initials;
+      }
+    }
+
+    setAvatar(document.getElementById("topAvatar"));
+    setAvatar(document.getElementById("sidebarAvatar"));
+
+    document.getElementById("sidebarName").textContent = user.name;
+
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+
+    function goToProfile() {
+      window.location.href = "profile.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("user");
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feet-First.ng - Home</title>
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <!-- Google Fonts for modern look -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Global Styles */
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: url("images/IMG_9581.JPG") no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* Fade-in animation */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 1s forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Jumbotron styling */
+    .jumbotron {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 3rem 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .jumbotron h1 {
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    /* Sections styling */
+    .section-card {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .section-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6);
+    }
+
+    a {
+      color: #ffd700;
+      text-decoration: underline;
+    }
+
+    a:hover {
+      color: #ffc107;
+      text-decoration: none;
+    }
+
+    footer {
+      margin-top: 3rem;
+      padding: 1rem 0;
+      background: rgba(0,0,0,0.6);
+      border-radius: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container fade-in">
+
+  <!-- Header -->
+  <header class="mb-5">
+    <div class="jumbotron text-center">
+      <h1 class="display-4">Welcome to Feet-First.ng</h1>
+      <p class="lead">Style, Comfort, Confidence!</p>
+    </div>
+  </header>
+
+  <!-- Shoe Sections -->
+  <div class="row">
+    <div class="col-md-4 col-sm-12 mb-4">
+      <div class="section-card text-center">
+        <h3>Comfort Shoes</h3>
+        <p>We have the best collection of shoes for the comfort of your soles.</p>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-12 mb-4">
+      <div class="section-card text-center">
+        <h3>Running Shoes</h3>
+        <p>Run around all day with our track and exercise shoes.</p>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-12 mb-4">
+      <div class="section-card text-center">
+        <h3>Slip-On Shoes</h3>
+        <p>Slide into your day effortlessly with our Slip-On footwear.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call to Action -->
+  <div class="text-center mt-4">
+    <p>Click <a href="Create-an-account.html">here</a> to create an account or log in.</p>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center text-white">
+    <p>&copy; 2026 Feet-First.ng</p>
+  </footer>
+
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
