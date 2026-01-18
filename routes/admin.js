@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const User = require("../models/user");
-const Order = require("../models/Order"); // if exists
+const Order = require("../models/order"); // if exists
 
 // ADMIN DASHBOARD DATA
 router.get("/dashboard", async (req, res) => {
