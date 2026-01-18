@@ -1,17 +1,31 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const orderSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  items: [
-    {
-      productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-      quantity: { type: Number, required: true },
-      size: Number
+const orderSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
+    items: [
+      {
+        productName: String,
+        quantity: Number,
+        price: Number
+      }
+    ],
+    totalAmount: {
+      type: Number,
+      required: true
+    },
+    status: {
+      type: String,
+      enum: ["pending", "completed"],
+      default: "pending"
     }
-  ],
-  total: { type: Number, required: true },
-  status: { type: String, default: 'pending' }, // pending, shipped, delivered
-  shippingAddress: String
-}, { timestamps: true });
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('Order', orderSchema);
+// ✅ Prevent overwrite error
+module.exports = mongoose.models.Order || mongoose.model("Order", orderSchema);

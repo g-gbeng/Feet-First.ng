@@ -1,11 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
-/* ============================
+const User = require("../models/User");
+const Order = require("../models/Order");
+const auth = require("../middleware/auth");
+
+/* =========================
    REGISTER USER
-============================ */
+========================= */
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -19,7 +23,7 @@ router.post("/register", async (req, res) => {
   if (!passwordPattern.test(password)) {
     return res.status(400).json({
       message:
-        "Password must be at least 8 characters, include a number and a special character",
+        "Password must be at least 8 characters and include a number and special character"
     });
   }
 
@@ -34,25 +38,21 @@ router.post("/register", async (req, res) => {
     await User.create({
       name,
       email,
-      password: hashedPassword,
+      password: hashedPassword
     });
 
     res.status(201).json({ message: "Signup successful" });
   } catch (err) {
-    console.error("Signup error:", err);
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-/* ============================
-   LOGIN USER
-============================ */
+/* =========================
+   LOGIN USER (JWT)
+========================= */
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
 
   try {
     const user = await User.findOne({ email });
@@ -60,39 +60,82 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
     res.json({
       message: "Login successful",
+      token,
       user: {
-        _id: user._id,
+        id: user._id,
         name: user.name,
-        email: user.email,
-      },
+        email: user.email
+      }
     });
   } catch (err) {
-    console.error("Login error:", err);
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-/* ============================
-   ADMIN: GET ALL USERS
-============================ */
-router.get("/all", async (req, res) => {
+/* =========================
+   GET CURRENT USER
+========================= */
+router.get("/me", auth, async (req, res) => {
   try {
-    const users = await User.find().select("name email");
-    res.json({ totalUsers: users.length, users });
-  } catch (err) {
-    console.error("Fetch users error:", err);
+    const user = await User.findById(req.user.id).select("name email");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(user);
+  } catch {
     res.status(500).json({ message: "Server error" });
   }
 });
 
-/* ============================
-   EXPORT ROUTER (MUST BE LAST)
-============================ */
+/* =========================
+   UPDATE PROFILE
+========================= */
+router.put("/profile", auth, async (req, res) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ message: "Name is required" });
+  }
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { name },
+      { new: true }
+    ).select("name email");
+
+    res.json(user);
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+/* =========================
+   ORDER HISTORY
+========================= */
+router.get("/orders", auth, async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.user.id })
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router;
