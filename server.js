@@ -25,6 +25,11 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "OK" });
 });
 
+const productRoutes = require("./routes/products");
+
+app.use("/api/products", productRoutes);
+
+
 /* -------------------- SERVER -------------------- */
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

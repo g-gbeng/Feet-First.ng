@@ -133,23 +133,46 @@
     footer {
       color: #fff;
     }
+    /* Overlay */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 999;
+  display: none;
+}
+
+/* Close button */
+.sidebar-close {
+  font-size: 22px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
   </style>
 </head>
 
 <body>
 
   <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="avatar" id="sidebarAvatar"></div>
-      <div>
-        <strong id="sidebarName"></strong>
-      </div>
-    </div>
 
-    <a href="profile.html"><i class="fa fa-user"></i> Profile</a>
-    <a href="#" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Logout</a>
+<div id="overlay"></div>
+
+  <div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="avatar" id="sidebarAvatar"></div>
+    <div class="flex-grow-1">
+      <strong id="sidebarName"></strong>
+    </div>
+    <span class="sidebar-close" onclick="closeSidebar()">✕</span>
   </div>
+
+  <a href="profile.html"><i class="fa fa-user"></i> Profile</a>
+  <a href="cart.html"><i class="fa fa-shopping-cart"></i> Cart</a>
+  <a href="favorites.html"><i class="fa fa-heart"></i> Favorites</a>
+  <a href="#" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Logout</a>
+</div>
+
 
   <!-- Header -->
   <div class="dashboard-header fade-in">
@@ -301,6 +324,23 @@
       localStorage.removeItem("user");
       window.location.href = "login.html";
     }
+    
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+
+function toggleSidebar() {
+  sidebar.classList.add("active");
+  overlay.style.display = "block";
+}
+
+function closeSidebar() {
+  sidebar.classList.remove("active");
+  overlay.style.display = "none";
+}
+
+overlay.addEventListener("click", closeSidebar);
+
+
   </script>
 
 </body>

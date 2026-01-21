@@ -1,272 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Puma Section</title>
-    
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-    <style>
-      .shoe-img {
-        max-width: 100%;
-        height: auto;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1 class="text-center mt-5 mb-4">Welcome to our Puma Section</h1>
-      <div class="row">
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/Palermo-Leather-Classics.avif"
-            class="img-fluid shoe-img"
-            alt="Shoe 1"
-          />
-          <div class="mt-2">
-            <h3>Puma</h3>
-            <p>Palermo-Leather-Classics</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe1size">Select Size:</label>
-              <select class="form-control" id="shoe1size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Select Quantity:</label>
-            <input type="number" class="form-control" id="quantity" value="1" min="1">
-          </div>
-          <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-        </div>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/Easy-Rider-Vintage-.avif"
-            class="img-fluid shoe-img"
-            alt="Shoe 2"
-          />
-          <div class="mt-2">
-            <h3>Puma</h3>
-            <p>Puma Easy-Rider-Vintage</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe2size">Select Size:</label>
-              <select class="form-control" id="shoe2size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Select Quantity:</label>
-            <input type="number" class="form-control" id="quantity" value="1" min="1">
-          </div>
-          <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-        </div>
+<title>Nike Collection</title>
 
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/GV-Special.avif"
-            class="img-fluid shoe-img"
-            alt="Shoe 3"
-          />
-          <div class="mt-2">
-            <h3>Puma</h3>
-            <p>Puma GV-Special</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe3size">Select Size:</label>
-              <select class="form-control" id="shoe3size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Select Quantity:</label>
-            <input type="number" class="form-control" id="quantity" value="1" min="1">
-          </div>
-          <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-        </div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/LOVE-MARATHON.avif"
-            class="img-fluid shoe-img"
-            alt="Shoe 4"
-          />
-          <div class="mt-2">
-            <h3>Puma</h3>
-            <p>Puma LOVE-MARATHON</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe2size">Select Size:</label>
-              <select class="form-control" id="shoe2size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Select Quantity:</label>
-            <input type="number" class="form-control" id="quantity" value="1" min="1">
-          </div>
-          <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-        </div>
+<style>
+:root {
+  --gold: #d4af37;
+}
 
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/Premier-Court.avif"
-            class="img-fluid shoe-img"
-            alt="Shoe 5"
-          />
-          <div class="mt-2">
-            <h3>Puma</h3>
-            <p>Puma Premier-Court</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe2size">Select Size:</label>
-              <select class="form-control" id="shoe2size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Select Quantity:</label>
-            <input type="number" class="form-control" id="quantity" value="1" min="1">
-          </div>
-          <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-        </div>
+body {
+  background: #fff;
+  font-family: "Segoe UI", sans-serif;
+}
 
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/CA-Pro-Suede.avif"
-            class="img-fluid shoe-img"
-            alt="Shoe 6"
-          />
-          <div class="mt-2">
-            <h3>Puma</h3>
-            <p>Puma CA-Pro-Suede</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe2size">Select Size:</label>
-              <select class="form-control" id="shoe2size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Select Quantity:</label>
-            <input type="number" class="form-control" id="quantity" value="1" min="1">
-          </div>
-          <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-        </div>
+/* TOP BAR */
+.top-bar {
+  position: sticky;
+  top: 0;
+  background: white;
+  border-bottom: 1px solid #eee;
+  z-index: 1000;
+}
 
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/Suede-XL-Hairy.avif"
-            class="img-fluid shoe-img"
-            alt="Shoe 7"
-          />
-          <div class="mt-2">
-            <h3>Puma</h3>
-            <p>Puma Suede-XL-Hairy</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe2size">Select Size:</label>
-              <select class="form-control" id="shoe2size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Select Quantity:</label>
-            <input type="number" class="form-control" id="quantity" value="1" min="1">
-          </div>
-          <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-        </div>
+.icon-btn {
+  position: relative;
+  cursor: pointer;
+  font-size: 20px;
+}
 
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/Deviate-NITRO™.avif"
-            class="img-fluid shoe-img"
-            alt="Shoe 8"
-          />
-          <div class="mt-2">
-            <h3>Puma</h3>
-            <p>Puma Deviate-NITRO™</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe2size">Select Size:</label>
-              <select class="form-control" id="shoe2size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Select Quantity:</label>
-            <input type="number" class="form-control" id="quantity" value="1" min="1">
-          </div>
-          <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-        </div>
+.badge-count {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: var(--gold);
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
 
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/FENTY-x-PUMA-Creeper.avif"
-            class="img-fluid shoe-img"
-            alt="Shoe 9"
-          />
-          <div class="mt-2">
-            <h3>Puma</h3>
-            <p>Puma FENTY-x-PUMA-Creeper</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe2size">Select Size:</label>
-              <select class="form-control" id="shoe2size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Select Quantity:</label>
-            <input type="number" class="form-control" id="quantity" value="1" min="1">
-          </div>
-          <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-        </div>
+/* PRODUCT CARD */
+.product-card {
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 15px;
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(212,175,55,0.25);
+}
+
+.product-card img {
+  height: 220px;
+  width: 100%;
+  object-fit: contain;
+}
+
+.price {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* BUTTONS */
+.btn-gold {
+  background: var(--gold);
+  color: white;
+  border: none;
+}
+
+.btn-gold:hover {
+  background: #b8962e;
+}
+
+.btn-outline-gold {
+  border: 1px solid var(--gold);
+  color: var(--gold);
+}
+
+.btn-outline-gold:hover {
+  background: var(--gold);
+  color: white;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar py-3">
+  <div class="container d-flex justify-content-end gap-4">
+    <div class="icon-btn" onclick="toggleFavorites()">
+      ❤️ <span class="badge-count" id="favCount">0</span>
+    </div>
+    <div class="icon-btn" onclick="toggleCart()">
+      🛒 <span class="badge-count" id="cartCount">0</span>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<div class="container my-5">
+  <h3 class="text-center mb-4">Nike Collection</h3>
+  <div class="row" id="products"></div>
+</div>
+
+<!-- CART MODAL -->
+<div class="modal fade" id="cartModal">
+  <div class="modal-dialog modal-dialog-end modal-fullscreen-sm-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Your Cart</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body" id="cartItems"></div>
+
+      <div class="modal-footer d-flex justify-content-between w-100">
+        <strong>Total: ₦<span id="cartTotal">0</span></strong>
+        <a href="/cart.html" class="btn btn-gold">Proceed to Cart</a>
       </div>
     </div>
+  </div>
+</div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* ================= AUTH ================= */
+function getUserId() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "/login.html";
+    return null;
+  }
+  return JSON.parse(atob(token.split(".")[1])).id;
+}
+
+const userId = getUserId();
+const CART_KEY = `cart_${userId}`;
+const FAV_KEY = `fav_${userId}`;
+
+let cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+let favorites = JSON.parse(localStorage.getItem(FAV_KEY)) || [];
+
+const cartModal = new bootstrap.Modal(document.getElementById("cartModal"));
+
+/* ================= UI ================= */
+function updateBadges() {
+  document.getElementById("cartCount").innerText =
+    cart.reduce((sum, i) => sum + i.qty, 0);
+
+  document.getElementById("favCount").innerText = favorites.length;
+}
+
+/* ================= LOAD PRODUCTS ================= */
+async function loadProducts() {
+  const res = await fetch("/api/products?brand=Puma");
+  const products = await res.json();
+
+  const container = document.getElementById("products");
+  container.innerHTML = "";
+
+  products.forEach(p => {
+    container.innerHTML += `
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="product-card">
+          <img src="/images/${p.image}">
+          <h6 class="mt-2">${p.name}</h6>
+          <p class="price">₦${p.price.toLocaleString()}</p>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-gold w-50" onclick='addToCart(${JSON.stringify(p)})'>
+              Add to Cart
+            </button>
+            <button class="btn btn-outline-gold w-50" onclick='addToFavorites(${JSON.stringify(p)})'>
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+/* ================= CART ================= */
+function addToCart(product) {
+  const existing = cart.find(i => i._id === product._id);
+
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({ ...product, qty: 1 });
+  }
+
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  updateBadges();
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(i => i._id !== id);
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  toggleCart();
+  updateBadges();
+}
+
+function decreaseQty(id) {
+  const item = cart.find(i => i._id === id);
+  if (!item) return;
+
+  item.qty -= 1;
+  if (item.qty <= 0) removeFromCart(id);
+
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  toggleCart();
+  updateBadges();
+}
+
+function toggleCart() {
+  const cartItems = document.getElementById("cartItems");
+  const cartTotal = document.getElementById("cartTotal");
+
+  let total = 0;
+  cartItems.innerHTML = "";
+
+  cart.forEach(p => {
+    total += p.price * p.qty;
+    cartItems.innerHTML += `
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <img src="/images/${p.image}" width="50">
+        <div class="ms-2 flex-grow-1">
+          <small>${p.name}</small><br>
+          <strong>₦${p.price.toLocaleString()} × ${p.qty}</strong>
+        </div>
+        <div>
+          <button class="btn btn-sm btn-outline-secondary" onclick="decreaseQty('${p._id}')">−</button>
+          <button class="btn btn-sm btn-outline-danger" onclick="removeFromCart('${p._id}')">×</button>
+        </div>
+      </div>
+    `;
+  });
+
+  cartTotal.innerText = total.toLocaleString();
+  cartModal.show();
+}
+
+/* ================= FAVORITES ================= */
+function addToFavorites(product) {
+  if (!favorites.find(f => f._id === product._id)) {
+    favorites.push(product);
+    localStorage.setItem(FAV_KEY, JSON.stringify(favorites));
+    updateBadges();
+  }
+}
+
+function toggleFavorites() {
+  window.location.href = "/favorites.html";
+}
+
+/* INIT */
+updateBadges();
+loadProducts();
+</script>
+
+</body>
 </html>
