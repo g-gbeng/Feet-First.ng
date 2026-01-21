@@ -1,190 +1,399 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>New Balance Section</title>
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-    <style>
-      .shoe-img {
-        max-width: 100%;
-        height: auto;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1 class="text-center mt-5 mb-4">Welcome to our New Balance Section</h1>
-      <div class="row">
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/990v4 Core.webp"
-            class="img-fluid shoe-img"
-            alt="Shoe 1"
-          />
-          <div class="mt-2">
-            <h3>New Balance</h3>
-            <p>990v4 Core</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe1size">Select Size:</label>
-              <select class="form-control" id="shoe1size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Select Quantity:</label>
-            <input type="number" class="form-control" id="quantity" value="1" min="1">
-          </div>
-          <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-        </div>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/NB 530.webp"
-            class="img-fluid shoe-img"
-            alt="Shoe 2"
-          />
-          <div class="mt-2">
-            <h3>New Balance</h3>
-            <p>NB 530</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe2size">Select Size:</label>
-              <select class="form-control" id="shoe2size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Select Quantity:</label>
-            <input type="number" class="form-control" id="quantity" value="1" min="1">
-          </div>
-          <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-        </div>
+<title>New Balance Collection</title>
 
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/NB 550.webp"
-            class="img-fluid shoe-img"
-            alt="Shoe 3"
-          />
-          <div class="mt-2">
-            <h3>New Balance</h3>
-            <p>NB 550</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe3size">Select Size:</label>
-              <select class="form-control" id="shoe3size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Select Quantity:</label>
-            <input type="number" class="form-control" id="quantity" value="1" min="1">
-          </div>
-          <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-        </div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/NB 9060.webp"
-            class="img-fluid shoe-img"
-            alt="Shoe 4"
-          />
-          <div class="mt-2">
-            <h3>New Balance</h3>
-            <p>NB 9060</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe2size">Select Size:</label>
-              <select class="form-control" id="shoe2size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Select Quantity:</label>
-            <input type="number" class="form-control" id="quantity" value="1" min="1">
-          </div>
-          <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-        </div>
+<style>
+:root {
+  --gold: #d4af37;
+}
 
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/NB Fresh-Foam X.webp"
-            class="img-fluid shoe-img"
-            alt="Shoe 5"
-          />
-          <div class="mt-2">
-            <h3>New Balance</h3>
-            <p>NB Fresh-Foam x</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe2size">Select Size:</label>
-              <select class="form-control" id="shoe2size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="quantity">Select Quantity:</label>
-              <input type="number" class="form-control" id="quantity" value="1" min="1">
-            </div>
-            <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-          </div>
-        </div>
+body {
+  background: #fff;
+  font-family: "Segoe UI", sans-serif;
+  overflow-x: hidden;
+}
 
-        <div class="col-md-4 mb-4">
-          <img
-            src="images/NB Rebel.webp"
-            class="img-fluid shoe-img"
-            alt="Shoe 6"
-          />
-          <div class="mt-2">
-            <h3>New Balance</h3>
-            <p>NB Rebel</p>
-            <p>Price:</p>
-            <div class="form-group">
-              <label for="shoe2size">Select Size:</label>
-              <select class="form-control" id="shoe2size">
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="quantity">Select Quantity:</label>
-              <input type="number" class="form-control" id="quantity" value="1" min="1">
-            </div>
-            <button type="button" class="btn btn-secondary" id="purchaseBtn">Add to cart</button>
-          </div>
-        </div>
+/* ===== SIDEBAR ===== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100%;
+  background: #111;
+  color: #fff;
+  transition: 0.3s ease;
+  z-index: 1000;
+  padding: 20px;
+}
+.sidebar.active { left: 0; }
+
+.sidebar a {
+  color: #fff;
+  display: block;
+  padding: 12px 0;
+  text-decoration: none;
+}
+.sidebar a:hover { color: var(--gold); }
+
+.sidebar-close {
+  margin-left: auto;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 999;
+  display: none;
+}
+
+/* ===== TOP BAR ===== */
+.top-bar {
+  position: sticky;
+  top: 0;
+  background: white;
+  border-bottom: 1px solid #eee;
+  z-index: 900;
+}
+
+.icon-btn {
+  position: relative;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.badge-count {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: var(--gold);
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+
+/* ===== PRODUCT CARD ===== */
+.product-card {
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 15px;
+  transition: 0.3s ease;
+  height: 100%;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(212,175,55,0.25);
+}
+
+.product-card img {
+  height: 220px;
+  width: 100%;
+  object-fit: contain;
+}
+
+.price {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.size-select {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.btn-gold {
+  background: var(--gold);
+  color: white;
+  border: none;
+}
+.btn-gold:hover { background: #b8962e; }
+
+.btn-outline-gold {
+  border: 1px solid var(--gold);
+  color: var(--gold);
+}
+
+.out-of-stock {
+  opacity: 0.6;
+}
+
+/* ===== TOAST MESSAGE ===== */
+.toast-message {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  z-index: 9999;
+}
+
+.toast-message.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-10px);
+}
+</style>
+</head>
+
+<body>
+
+<div id="overlay"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="d-flex align-items-center mb-4">
+    <strong>Menu</strong>
+    <span class="sidebar-close" onclick="closeSidebar()">✕</span>
+  </div>
+
+  <a href="dashboard.html"><i class="fa fa-home"></i> Dashboard</a>
+  <a href="cart.html"><i class="fa fa-shopping-cart"></i> Cart</a>
+  <a href="favorites.html"><i class="fa fa-heart"></i> Favorites</a>
+  <a href="orders.html"><i class="fa fa-list"></i> Orders</a>
+  <a href="#" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Logout</a>
+</div>
+
+<!-- TOP BAR -->
+<div class="top-bar py-3">
+  <div class="container d-flex justify-content-between align-items-center">
+    <span class="menu-btn" onclick="toggleSidebar()">
+      <i class="fa fa-bars"></i>
+    </span>
+
+    <div class="d-flex gap-4">
+      <div class="icon-btn" onclick="goToFavorites()">
+        ❤️ <span class="badge-count" id="favCount">0</span>
+      </div>
+      <div class="icon-btn" onclick="openCart()">
+        🛒 <span class="badge-count" id="cartCount">0</span>
       </div>
     </div>
+  </div>
+</div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  </body>
+<!-- PRODUCTS -->
+<div class="container my-5">
+  <h3 class="text-center mb-4">New Balance Collection</h3>
+  <div class="row" id="products"></div>
+</div>
+
+<!-- CART MODAL -->
+<div class="modal fade" id="cartModal">
+  <div class="modal-dialog modal-dialog-end modal-fullscreen-sm-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Your Cart</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="cartItems"></div>
+      <div class="modal-footer d-flex justify-content-between w-100">
+        <strong>Total: ₦<span id="cartTotal">0</span></strong>
+        <a href="cart.html" class="btn btn-gold">Proceed to Cart</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast-message"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* ===== AUTH ===== */
+function getUserId() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "login.html";
+    return null;
+  }
+  return JSON.parse(atob(token.split(".")[1])).id;
+}
+
+const userId = getUserId();
+const CART_KEY = `cart_${userId}`;
+const FAV_KEY = `fav_${userId}`;
+
+let cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+let favorites = JSON.parse(localStorage.getItem(FAV_KEY)) || [];
+
+const cartModal = new bootstrap.Modal(document.getElementById("cartModal"));
+
+/* ===== TOAST ===== */
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 1800);
+}
+
+/* ===== BADGES ===== */
+function updateBadges() {
+  document.getElementById("cartCount").innerText =
+    cart.reduce((s, i) => s + i.qty, 0);
+  document.getElementById("favCount").innerText = favorites.length;
+}
+
+/* ===== LOAD PRODUCTS ===== */
+async function loadProducts() {
+  const res = await fetch("/api/products?brand=New Balance");
+  const products = await res.json();
+  const container = document.getElementById("products");
+  container.innerHTML = "";
+
+  products.forEach(p => {
+    container.innerHTML += `
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="product-card ${!p.inStock ? "out-of-stock" : ""}">
+          <img src="/images/${p.image}">
+          <h6 class="mt-2">${p.name}</h6>
+          <p class="price">₦${p.price.toLocaleString()}</p>
+
+          ${
+            p.inStock
+            ? `
+              <select class="form-select size-select" id="size_${p._id}">
+                <option value="">Select Size</option>
+                ${p.sizes.map(s => `<option value="${s}">${s}</option>`).join("")}
+              </select>
+
+              <div class="d-flex gap-2">
+                <button class="btn btn-gold w-50"
+                  onclick='addToCart(${JSON.stringify(p)})'>
+                  Add to Cart
+                </button>
+                <button class="btn btn-outline-gold w-50"
+                  onclick='addToFavorites(${JSON.stringify(p)})'>
+                  Save
+                </button>
+              </div>
+            `
+            : `<span class="text-danger fw-bold">Out of Stock</span>`
+          }
+        </div>
+      </div>
+    `;
+  });
+}
+
+/* ===== CART ===== */
+function addToCart(product) {
+  const size = document.getElementById(`size_${product._id}`).value;
+  if (!size) return alert("Please select a size");
+
+  const existing = cart.find(i => i._id === product._id && i.size === size);
+  if (existing) existing.qty += 1;
+  else cart.push({ ...product, size, qty: 1 });
+
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  updateBadges();
+  showToast("Added to cart");
+}
+
+function renderCart() {
+  const cartItems = document.getElementById("cartItems");
+  const cartTotal = document.getElementById("cartTotal");
+
+  cartItems.innerHTML = "";
+  let total = 0;
+
+  if (!cart.length) {
+    cartItems.innerHTML = "<p class='text-center text-muted'>Your cart is empty</p>";
+    cartTotal.innerText = "0";
+    return;
+  }
+
+  cart.forEach((p, i) => {
+    total += p.price * p.qty;
+    cartItems.innerHTML += `
+      <div class="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
+        <img src="/images/${p.image}" width="50">
+        <div class="flex-grow-1">
+          <small><strong>${p.name}</strong></small><br>
+          <small>Size: ${p.size}</small><br>
+          <small>₦${p.price.toLocaleString()} × ${p.qty}</small>
+        </div>
+        <button class="btn btn-sm btn-outline-danger"
+          onclick="removeFromCart(${i})">✕</button>
+      </div>
+    `;
+  });
+
+  cartTotal.innerText = total.toLocaleString();
+}
+
+function openCart() {
+  renderCart();
+  cartModal.show();
+}
+
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  updateBadges();
+  renderCart();
+}
+
+/* ===== FAVORITES ===== */
+function addToFavorites(product) {
+  if (!favorites.find(f => f._id === product._id)) {
+    favorites.push(product);
+    localStorage.setItem(FAV_KEY, JSON.stringify(favorites));
+    updateBadges();
+    showToast("Saved");
+  }
+}
+
+function goToFavorites() {
+  window.location.href = "favorites.html";
+}
+
+/* ===== SIDEBAR ===== */
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+
+function toggleSidebar() {
+  sidebar.classList.add("active");
+  overlay.style.display = "block";
+}
+
+function closeSidebar() {
+  sidebar.classList.remove("active");
+  overlay.style.display = "none";
+}
+
+overlay.addEventListener("click", closeSidebar);
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "login.html";
+}
+
+/* INIT */
+updateBadges();
+loadProducts();
+</script>
+
+</body>
 </html>

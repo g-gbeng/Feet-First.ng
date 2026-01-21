@@ -38,7 +38,8 @@ body {
   background: #b8962e;
 }
 
-.btn-gold:disabled {
+.btn-gold:disabled,
+button:disabled {
   background: #ddd;
   cursor: not-allowed;
 }
@@ -53,7 +54,16 @@ body {
   <div id="cartItems"></div>
 
   <div class="d-flex justify-content-between align-items-center mt-4">
+    <button
+      class="btn btn-outline-danger"
+      id="clearCartBtn"
+      onclick="clearCart()"
+    >
+      Clear Cart
+    </button>
+
     <strong>Total: ₦<span id="cartTotal">0</span></strong>
+
     <a href="checkout.html" class="btn btn-gold" id="checkoutBtn">
       Proceed to Checkout
     </a>
@@ -77,6 +87,7 @@ let cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
 const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
 const checkoutBtn = document.getElementById("checkoutBtn");
+const clearCartBtn = document.getElementById("clearCartBtn");
 
 function renderCart() {
   cartItems.innerHTML = "";
@@ -85,15 +96,19 @@ function renderCart() {
   if (cart.length === 0) {
     cartItems.innerHTML =
       "<p class='text-center text-muted'>Your cart is empty</p>";
+
     cartTotal.innerText = "0";
+
     checkoutBtn.classList.add("disabled");
-    checkoutBtn.setAttribute("aria-disabled", "true");
     checkoutBtn.onclick = e => e.preventDefault();
+
+    clearCartBtn.disabled = true;
     return;
   }
 
   checkoutBtn.classList.remove("disabled");
   checkoutBtn.onclick = null;
+  clearCartBtn.disabled = false;
 
   cart.forEach((item, index) => {
     total += item.price * item.qty;
@@ -104,16 +119,22 @@ function renderCart() {
 
         <div class="flex-grow-1">
           <strong>${item.name}</strong><br>
-          <span class="price">₦${item.price.toLocaleString()}</span>
+          <small>Size: ${item.size}</small><br>
+          <span class="price">
+            ₦${item.price.toLocaleString()} × ${item.qty}
+          </span>
         </div>
 
         <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-sm btn-outline-secondary" onclick="changeQty(${index}, -1)">−</button>
+          <button class="btn btn-sm btn-outline-secondary"
+            onclick="changeQty(${index}, -1)">−</button>
           <span>${item.qty}</span>
-          <button class="btn btn-sm btn-outline-secondary" onclick="changeQty(${index}, 1)">+</button>
+          <button class="btn btn-sm btn-outline-secondary"
+            onclick="changeQty(${index}, 1)">+</button>
         </div>
 
-        <button class="btn btn-sm btn-outline-danger" onclick="removeItem(${index})">✕</button>
+        <button class="btn btn-sm btn-outline-danger"
+          onclick="removeItem(${index})">✕</button>
       </div>
     `;
   });
@@ -132,6 +153,12 @@ function removeItem(index) {
   saveCart();
 }
 
+function clearCart() {
+  if (!confirm("Clear all items from cart?")) return;
+  cart = [];
+  saveCart();
+}
+
 function saveCart() {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
   renderCart();
@@ -142,3 +169,4 @@ renderCart();
 
 </body>
 </html>
+    
