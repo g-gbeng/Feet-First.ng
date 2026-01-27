@@ -5,119 +5,139 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Feet-First.ng — Profile</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
-  /* ===============================
-     FEET-FIRST THEME VARIABLES
-  =============================== */
-  :root {
-    --primary: #111111;
-    --accent: #d4af37;
-    --bg: #f4f4f4;
-    --card-bg: #ffffff;
-    --text-main: #222222;
-    --text-muted: #6b6b7a;
-  }
+:root {
+  --primary: #111111;
+  --accent: #d4af37;
+  --bg: #f4f4f4;
+  --card-bg: #ffffff;
+  --text-main: #222222;
+  --text-muted: #6b6b7a;
+}
 
-  body {
-    font-family: "Poppins", sans-serif;
-    background: var(--bg);
-    margin: 0;
-    color: var(--text-main);
-    animation: fadeIn .5s ease-in;
-  }
+body {
+  font-family: "Poppins", sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+  margin: 0;
+}
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+/* ===============================
+   TOP BAR
+================================ */
+.top-bar {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 1100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+}
 
-  .top-bar {
-    position: fixed;
-    top: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 40px);
-    max-width: 1100px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 1000;
-  }
+.top-bar strong {
+  font-weight: 600;
+}
 
-  .top-bar strong {
-    color: var(--primary);
-  }
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--primary);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
 
-  .avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    background: var(--primary);
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    cursor: pointer;
-  }
+/* ===============================
+   MAIN LAYOUT
+================================ */
+.container-main {
+  max-width: 1100px;
+  margin: 110px auto 40px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+}
 
+.card-glass {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.05);
+}
+
+/* ===============================
+   LEFT PROFILE CARD
+================================ */
+.profile-pic-lg {
+  width: 110px;
+  height: 110px;
+  border-radius: 16px;
+  background: var(--primary);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.profile-name {
+  margin-top: 14px;
+  font-weight: 600;
+}
+
+.profile-email {
+  font-size: .85rem;
+  color: var(--text-muted);
+}
+
+.logout-btn {
+  margin-top: 20px;
+}
+
+/* ===============================
+   FORM
+================================ */
+.section-title {
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+label {
+  font-size: .8rem;
+  margin-top: 14px;
+  color: var(--text-muted);
+}
+
+.form-control {
+  border-radius: 10px;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 900px) {
   .container-main {
-    max-width: 1100px;
-    margin: 110px auto 40px;
-    padding: 16px;
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 16px;
+    grid-template-columns: 1fr;
   }
-
-  .card-glass {
-    background: var(--card-bg);
-    border-radius: 14px;
-    padding: 18px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.05);
-  }
-
-  .profile-pic-lg {
-    width: 120px;
-    height: 120px;
-    border-radius: 14px;
-    background: var(--primary);
-    color: var(--accent);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size: 48px;
-    font-weight: 700;
-  }
-
-  label {
-    font-size: .85rem;
-    margin-top: 10px;
-  }
-
-  .btn-primary {
-    background: var(--primary);
-    border: none;
-  }
-
-  .btn-primary:hover {
-    background: var(--accent);
-    color: #000;
-  }
-
-  @media (max-width: 900px) {
-    .container-main {
-      grid-template-columns: 1fr;
-    }
-  }
+}
 </style>
 </head>
 
 <body>
 
+<!-- TOP BAR -->
 <div class="top-bar">
   <strong>My Profile</strong>
   <div id="topAvatar" class="avatar">U</div>
@@ -128,17 +148,18 @@
   <!-- LEFT -->
   <aside class="card-glass text-center">
     <div id="profileAvatar" class="profile-pic-lg mx-auto">U</div>
-    <h5 id="displayName" class="mt-3">User</h5>
-    <p id="displayEmail" class="text-muted small">email@example.com</p>
 
-    <button id="logoutBtn" class="btn btn-outline-danger btn-sm mt-3 w-100">
+    <div id="displayName" class="profile-name">User</div>
+    <div id="displayEmail" class="profile-email">email@example.com</div>
+
+    <button id="logoutBtn" class="btn btn-outline-danger btn-sm w-100 logout-btn">
       Logout
     </button>
   </aside>
 
   <!-- RIGHT -->
   <section class="card-glass">
-    <h5>Personal Information</h5>
+    <div class="section-title">Personal Information</div>
 
     <label>Full Name</label>
     <input id="fullName" class="form-control" disabled />
@@ -146,11 +167,7 @@
     <label>Email</label>
     <input id="email" class="form-control" disabled />
 
-    <button id="saveBtn" class="btn btn-primary mt-3">
-      
-    </button>
-
-    <div id="msg" class="small mt-2"></div>
+    <div id="msg" class="small mt-3"></div>
   </section>
 
 </main>
@@ -179,9 +196,7 @@ function initials(name) {
 async function loadProfile() {
   try {
     const res = await fetch("/api/users/me", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` }
     });
 
     if (!res.ok) {
@@ -192,13 +207,13 @@ async function loadProfile() {
 
     const user = await res.json();
 
-    document.getElementById("displayName").textContent = user.name;
-    document.getElementById("displayEmail").textContent = user.email;
-    document.getElementById("fullName").value = user.name;
-    document.getElementById("email").value = user.email;
+    displayName.textContent = user.name;
+    displayEmail.textContent = user.email;
+    fullName.value = user.name;
+    email.value = user.email;
 
-    document.getElementById("profileAvatar").textContent = initials(user.name);
-    document.getElementById("topAvatar").textContent = initials(user.name);
+    profileAvatar.textContent = initials(user.name);
+    topAvatar.textContent = initials(user.name);
 
   } catch {
     window.location.href = "/login.html";
@@ -208,51 +223,9 @@ async function loadProfile() {
 loadProfile();
 
 /* ===============================
-   SAVE PROFILE
-================================ */
-document.getElementById("saveBtn").onclick = async () => {
-  const name = document.getElementById("fullName").value.trim();
-  const msg = document.getElementById("msg");
-
-  if (!name) {
-    msg.textContent = "Name is required";
-    msg.style.color = "red";
-    return;
-  }
-
-  try {
-    const res = await fetch(
-      "/api/users/profile/" + JSON.parse(atob(token.split('.')[1])).id,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ name })
-      }
-    );
-
-    if (!res.ok) {
-      msg.textContent = "";
-      msg.style.color = "red";
-      return;
-    }
-
-    msg.textContent = "Profile updated successfully";
-    msg.style.color = "green";
-    loadProfile();
-
-  } catch {
-    msg.textContent = "Network error";
-    msg.style.color = "red";
-  }
-};
-
-/* ===============================
    LOGOUT
 ================================ */
-document.getElementById("logoutBtn").onclick = () => {
+logoutBtn.onclick = () => {
   localStorage.clear();
   window.location.href = "/login.html";
 };

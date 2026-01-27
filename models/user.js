@@ -20,10 +20,17 @@ const userSchema = new mongoose.Schema(
     profileImage: {
       type: String,
       default: ""
-    }
+    },
+    isAdmin: {
+  type: Boolean,
+  default: false
+}
+
   },
   { timestamps: true }
 );
+
+
 
 // ✅ Prevent model overwrite error
 module.exports = mongoose.models.User || mongoose.model("User", userSchema);

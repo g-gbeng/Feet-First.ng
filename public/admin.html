@@ -49,6 +49,9 @@
   <div class="mb-4 text-center">
     <h2>Admin Dashboard</h2>
     <p class="text-muted">Feet-First.ng Management Panel</p>
+    <button class="btn btn-sm btn-outline-danger mt-2" onclick="adminLogout()">
+      Logout
+    </button>
   </div>
 
   <!-- STATS -->
@@ -153,7 +156,25 @@
 </div>
 
 <script>
-  // Currency formatter (₦ with commas)
+  /* ============================
+     ADMIN AUTH GUARD (NEW)
+  ============================ */
+
+  const adminToken = localStorage.getItem("adminToken");
+
+  if (!adminToken) {
+    window.location.href = "/admin-login.html";
+  }
+
+  function adminLogout() {
+    localStorage.removeItem("adminToken");
+    window.location.href = "/admin-login.html";
+  }
+
+  /* ============================
+     UTILITIES
+  ============================ */
+
   const formatNaira = (amount) => {
     return new Intl.NumberFormat('en-NG', {
       style: 'currency',
@@ -164,21 +185,39 @@
   let users = [];
   let orders = [];
 
+  /* ============================
+     LOAD DASHBOARD (UPDATED)
+  ============================ */
+
   async function loadDashboard() {
-    const res = await fetch('/api/admin/dashboard');
-    const data = await res.json();
+    try {
+      const res = await fetch('/api/admin/dashboard', {
+        headers: {
+          Authorization: `Bearer ${adminToken}`
+        }
+      });
 
-    users = data.users;
-    orders = data.orders;
+      if (res.status === 401 || res.status === 403) {
+        adminLogout();
+        return;
+      }
 
-    renderUsers(users);
-    renderOrders(orders);
+      const data = await res.json();
 
-    document.getElementById('totalUsers').textContent = users.length;
-    document.getElementById('totalOrders').textContent = orders.length;
+      users = data.users;
+      orders = data.orders;
 
-    const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
-    document.getElementById('totalRevenue').textContent = formatNaira(totalRevenue);
+      renderUsers(users);
+      renderOrders(orders);
+
+      document.getElementById('totalUsers').textContent = users.length;
+      document.getElementById('totalOrders').textContent = orders.length;
+
+      const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+      document.getElementById('totalRevenue').textContent = formatNaira(totalRevenue);
+    } catch (err) {
+      console.error("Admin dashboard load failed", err);
+    }
   }
 
   function renderUsers(list) {
