@@ -1,35 +1,43 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Order = require('../models/order');
+const Order = require("../models/order");
+const Cart = require("../models/cart");
+const auth = require("../middleware/auth");
+const generateOrderId = require("../utils/generateOrderId");
 
-// Create a new order
-router.post('/create', async (req, res) => {
-  const { userId, items, total, shippingAddress } = req.body;
+router.post("/", auth, async (req, res) => {
   try {
-    const order = await Order.create({ userId, items, total, shippingAddress });
-    res.status(201).json(order);
+    const { total } = req.body;
+
+    const cart = await Cart.findOne({ userId: req.user._id });
+
+    if (!cart || cart.items.length === 0) {
+      return res.status(400).json({ message: "Cart is empty" });
+    }
+
+    const orderId = await generateOrderId();
+
+    const order = new Order({
+      orderId,
+      user: req.user._id,
+      items: cart.items,
+      total,
+      status: "pending"
+    });
+
+    await order.save();
+
+    // Clear cart after order
+    cart.items = [];
+    await cart.save();
+
+    res.json({
+      orderId
+    });
+
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Order failed" });
   }
 });
 
-router.get('/:userId', async (req, res) => {
-  try {
-    const orders = await Order.find({ userId: req.params.userId }).populate('items.productId');
-    res.json(orders);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-// GET /api/orders/admin - For admin dashboard
-router.get('/admin', async (req, res) => {
-  try {
-    const pendingOrders = await Order.find({ status: 'pending' }).populate('user', 'name email');
-    const completedOrders = await Order.find({ status: 'completed' }).populate('user', 'name email');
-
-    res.json({ pendingOrders, completedOrders });
-  } catch (err) {
-    console.error('Error fetching orders:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
+module.exports = router;

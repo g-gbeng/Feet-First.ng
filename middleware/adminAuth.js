@@ -1,19 +1,24 @@
 const jwt = require("jsonwebtoken");
 
-module.exports = function adminAuth(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ message: "No token" });
+module.exports = function (req, res, next) {
 
-  const token = authHeader.split(" ")[1];
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).send("Access denied");
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded.isAdmin)
-      return res.status(403).json({ message: "Admin only" });
+
+    if (!decoded.isAdmin) {
+      return res.status(403).send("Not authorized");
+    }
 
     req.admin = decoded;
     next();
-  } catch {
-    res.status(401).json({ message: "Invalid token" });
+
+  } catch (err) {
+    res.status(401).send("Invalid token");
   }
 };
