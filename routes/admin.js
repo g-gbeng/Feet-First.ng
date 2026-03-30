@@ -8,7 +8,7 @@ const Order = require("../models/order");
 const transporter = require("../utils/mailer");
 const adminAuth = require("../middleware/adminAuth");
 
-
+router.use(adminAuth);
 /* ===============================
    ADMIN LOGIN
 ================================ */
