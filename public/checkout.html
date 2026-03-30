@@ -84,21 +84,18 @@ body {
 </div>
 
 <script>
-const WHATSAPP_NUMBER = "2349069436272";
-
-function getUser() {
+function getUserId() {
   const token = localStorage.getItem("token");
   if (!token) {
     window.location.href = "/login.html";
     return null;
   }
-  return JSON.parse(atob(token.split(".")[1]));
+  return JSON.parse(atob(token.split(".")[1])).id;
 }
 
-const user = getUser();
-const userId = user.id;
-
+const userId = getUserId();
 const CART_KEY = `cart_${userId}`;
+
 let cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
 
 const orderSummary = document.getElementById("orderSummary");
@@ -131,7 +128,7 @@ function renderCheckout() {
 }
 
 function generateOrderId() {
-  return "FFNG-" + Date.now();
+  return "FFNG-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
 }
 
 async function placeOrder() {
@@ -141,7 +138,7 @@ async function placeOrder() {
   const address = document.getElementById("address").value.trim();
 
   if (!name || !phone || !address) {
-    alert("Please fill in name, phone number and delivery address.");
+    alert("Please fill in all fields.");
     return;
   }
 
@@ -153,10 +150,41 @@ async function placeOrder() {
   const orderId = generateOrderId();
   const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
-  // WhatsApp Message
+  try {
+    const res = await fetch("/api/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+      body: JSON.stringify({
+        orderId,
+        name,
+        phone,
+        address,
+        items: cart,
+        total,
+        status: "pending"
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Order failed");
+    }
+
+  } catch (err) {
+    alert("Order failed: " + err.message);
+    return;
+  }
+
+  // Clear cart ONLY after successful order
+  localStorage.removeItem(CART_KEY);
+
+  // WhatsApp message
   let message = `Hi FeetFirst \n\n`;
-  message += `I would like to place an order.\n\n`;
-  message += ` *Order ID:* ${orderId}\n\n`;
+  message += ` *Order ID:* ${orderId}\n`;
   message += ` *Name:* ${name}\n`;
   message += ` *Phone:* ${phone}\n`;
   message += ` *Address:* ${address}\n\n`;
@@ -166,28 +194,9 @@ async function placeOrder() {
     message += `- ${item.name} (Size ${item.size}) ×${item.qty} — ₦${(item.price * item.qty).toLocaleString()}\n`;
   });
 
-  message += `\n *Total:* ₦${total.toLocaleString()}\n\n`;
-  message += `Please confirm my order. Thank you `;
+  message += `\n *Total:* ₦${total.toLocaleString()}\n`;
 
-  // Save to Database
-  await fetch("/api/orders", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`
-    },
-    body: JSON.stringify({
-      orderId,
-      name,   // NOW CORRECT
-      phone,
-      address,
-      items: cart,
-      total,
-      status: "pending"
-    })
-  });
-
-  localStorage.removeItem(CART_KEY);
+  const WHATSAPP_NUMBER = "2349069436272";
 
   const whatsappURL =
     `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
@@ -195,8 +204,7 @@ async function placeOrder() {
   window.location.href = whatsappURL;
 }
 
-renderCheckout();
-</script>
+renderCheckout();</script>
 
 </body>
 </html>

@@ -1,18 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const Order = require("../models/order");
-const Cart = require("../models/cart");
 const auth = require("../middleware/auth");
 const generateOrderId = require("../utils/generateOrderId");
 
 router.post("/", auth, async (req, res) => {
   try {
-    const { total } = req.body;
+    const { items, total, name, phone, address } = req.body;
 
-    const cart = await Cart.findOne({ userId: req.user._id });
+    // ✅ Validate incoming data
+    if (!items || items.length === 0) {
+      return res.status(400).json({ message: "No items in order" });
+    }
 
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ message: "Cart is empty" });
+    if (!total) {
+      return res.status(400).json({ message: "Total is required" });
     }
 
     const orderId = await generateOrderId();
@@ -20,22 +22,24 @@ router.post("/", auth, async (req, res) => {
     const order = new Order({
       orderId,
       user: req.user._id,
-      items: cart.items,
+      name,
+      phone,
+      address,
+      items,
       total,
       status: "pending"
     });
 
     await order.save();
 
-    // Clear cart after order
-    cart.items = [];
-    await cart.save();
-
-    res.json({
-      orderId
+    res.status(201).json({
+      message: "Order created successfully",
+      orderId,
+      order
     });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Order failed" });
   }
 });

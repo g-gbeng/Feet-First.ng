@@ -303,24 +303,16 @@ const row=`
 
 <td>
 
-<span class="badge badge-${order.status==='pending'?'warning':'success'}">
+<div class="d-flex flex-nowrap align-items-center">
 
-${order.status}
-
-</span>
-
-<div class="mt-2">
-
-${order.status==="pending"?`
-
+${order.status === "pending" ? `
 <button
-class="btn btn-sm btn-success"
+class="btn btn-sm btn-success mr-2"
 onclick="markCompleted('${order._id}')"
 >
 Completed
 </button>
-
-`:''}
+` : ''}
 
 <button
 class="btn btn-sm btn-danger"

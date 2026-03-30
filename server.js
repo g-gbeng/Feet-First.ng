@@ -5,8 +5,10 @@ const connectDB = require("./config/db");
 
 const userRoutes = require("./routes/users");
 const adminRoutes = require("./routes/admin");
-const adminAuth = require("./middleware/adminAuth");
 const productRoutes = require("./routes/products");
+const orderRoutes = require("./routes/orders"); // ✅ ADDED
+
+const adminAuth = require("./middleware/adminAuth");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,14 +21,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /* ================================
-   🔒 PROTECT ADMIN PAGE FIRST
+   🔒 PROTECT ADMIN PAGE
 ================================ */
-app.get("/admin-dashboard.html", adminAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, "public/admin-dashboard.html"));
+app.get("/admin.html", adminAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, "public/admin.html"));
 });
 
 /* ================================
-   STATIC FILES (AFTER PROTECTION)
+   STATIC FILES
 ================================ */
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -34,7 +36,9 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes); // ✅ ADDED
 
+/* -------------------- HEALTH -------------------- */
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK" });
 });
