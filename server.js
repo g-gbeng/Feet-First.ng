@@ -23,9 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 /* ================================
    🔒 PROTECT ADMIN PAGE
 ================================ */
-app.get("/admin.html", adminAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, "public/admin.html"));
-});
+
 
 /* ================================
    STATIC FILES
