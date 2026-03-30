@@ -8,9 +8,9 @@ const Order = require("../models/order");
 const transporter = require("../utils/mailer");
 const adminAuth = require("../middleware/adminAuth");
 
-router.use(adminAuth);
+
 /* ===============================
-   ADMIN LOGIN
+   ADMIN LOGIN (PUBLIC ROUTE)
 ================================ */
 router.post("/login", async (req, res) => {
   try {
@@ -37,16 +37,24 @@ router.post("/login", async (req, res) => {
     );
 
     res.json({ token });
+
   } catch (error) {
+    console.error("LOGIN ERROR:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
 
 
 /* ===============================
+   APPLY AUTH TO ALL ROUTES BELOW
+================================ */
+router.use(adminAuth);
+
+
+/* ===============================
    DASHBOARD DATA
 ================================ */
-router.get("/dashboard", adminAuth, async (req, res) => {
+router.get("/dashboard", async (req, res) => {
   try {
 
     const users = await User.find()
@@ -73,6 +81,7 @@ router.get("/dashboard", adminAuth, async (req, res) => {
     });
 
   } catch (error) {
+    console.error("DASHBOARD ERROR:", error);
     res.status(500).json({ message: "Failed to load dashboard data" });
   }
 });
@@ -81,7 +90,7 @@ router.get("/dashboard", adminAuth, async (req, res) => {
 /* ===============================
    MARK ORDER AS COMPLETED
 ================================ */
-router.put("/orders/:id/complete", adminAuth, async (req, res) => {
+router.put("/orders/:id/complete", async (req, res) => {
   try {
 
     const order = await Order.findById(req.params.id);
@@ -98,6 +107,7 @@ router.put("/orders/:id/complete", adminAuth, async (req, res) => {
     res.json({ message: "Order marked as completed" });
 
   } catch (err) {
+    console.error("COMPLETE ORDER ERROR:", err);
     res.status(500).json({ message: "Failed to update order" });
   }
 });
@@ -106,7 +116,7 @@ router.put("/orders/:id/complete", adminAuth, async (req, res) => {
 /* ===============================
    DELETE ORDER
 ================================ */
-router.delete("/orders/:id", adminAuth, async (req, res) => {
+router.delete("/orders/:id", async (req, res) => {
   try {
 
     await Order.findByIdAndDelete(req.params.id);
@@ -114,22 +124,16 @@ router.delete("/orders/:id", adminAuth, async (req, res) => {
     res.json({ message: "Order deleted successfully" });
 
   } catch (err) {
+    console.error("DELETE ORDER ERROR:", err);
     res.status(500).json({ message: "Failed to delete order" });
   }
 });
 
 
 /* ===============================
-   EMAIL TEMPLATE FUNCTION
+   SEND EMAIL
 ================================ */
-
-
-
-/* ===============================
-   SEND EMAIL (FIXED)
-================================ */
-router.post("/send-email", adminAuth, async (req, res) => {
-
+router.post("/send-email", async (req, res) => {
   try {
 
     const { to, subject, message } = req.body;
@@ -139,67 +143,31 @@ router.post("/send-email", adminAuth, async (req, res) => {
     }
 
     await transporter.sendMail({
-  from: `"FeetFirst" <${process.env.EMAIL_USER}>`,
-  to,
-  subject,
-  html: `
-    <!DOCTYPE html>
-    <html>
-      <body style="margin:0; padding:0; background:#f4f4f4; font-family: Arial, sans-serif;">
-        
-        <table width="100%" cellpadding="0" cellspacing="0">
-          <tr>
-            <td align="center">
-
-              <table width="600" cellpadding="20" cellspacing="0" style="background:white; margin-top:30px; border-radius:10px;">
-                
-                <tr>
-                  <td align="center">
-                    <h2 style="color:#d4af37; margin:0;">
-                      FeetFirstng
-                    </h2>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>
-                  
-
-                    <p style="line-height:1.6;">
-                      ${message}
-                    </p>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>
-                    <hr>
-                    <p style="font-size:12px; color:gray; text-align:center;">
-                      FeetFirst • Premium Footwear Store
-                    </p>
-                  </td>
-                </tr>
-
-              </table>
-
-            </td>
-          </tr>
-        </table>
-
-      </body>
-    </html>
-  `
-});
+      from: `"FeetFirst" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html: `
+        <html>
+          <body style="font-family: Arial; background:#f4f4f4; padding:20px;">
+            <div style="background:#fff; padding:20px; border-radius:10px;">
+              <h2 style="color:#d4af37;">FeetFirst</h2>
+              <p>${message}</p>
+              <hr>
+              <p style="font-size:12px; color:gray; text-align:center;">
+                FeetFirst • Premium Footwear Store
+              </p>
+            </div>
+          </body>
+        </html>
+      `
+    });
 
     res.json({ message: "Email sent successfully" });
 
   } catch (error) {
-
     console.error("EMAIL ERROR:", error);
     res.status(500).json({ message: "Email failed to send" });
-
   }
-
 });
 
 
