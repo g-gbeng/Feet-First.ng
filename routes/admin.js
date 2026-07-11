@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 
 const User = require("../models/user");
 const Order = require("../models/order");
-const transporter = require("../utils/mailer");
+const resend = require("../utils/mailer");
 const adminAuth = require("../middleware/adminAuth");
 
 
@@ -142,25 +142,146 @@ router.post("/send-email", async (req, res) => {
       return res.status(400).json({ message: "All fields required" });
     }
 
-    await transporter.sendMail({
-      from: `"FeetFirst" <${process.env.EMAIL_USER}>`,
-      to,
-      subject,
+   /* ===============================
+   SEND EMAIL (RESEND)
+================================ */
+router.post("/send-email", async (req, res) => {
+  try {
+    const { to, subject, message } = req.body;
+
+    if (!to || !subject || !message) {
+      return res.status(400).json({
+        message: "All fields are required."
+      });
+    }
+
+    await resend.emails.send({
+      from: "FeetFirst <onboarding@resend.dev>", // Replace after verifying your domain
+      to: [to],
+      subject: subject,
       html: `
-        <html>
-          <body style="font-family: Arial; background:#f4f4f4; padding:20px;">
-            <div style="background:#fff; padding:20px; border-radius:10px;">
-              <h2 style="color:#d4af37;">FeetFirst</h2>
-              <p>${message}</p>
-              <hr>
-              <p style="font-size:12px; color:gray; text-align:center;">
-                FeetFirst • Premium Footwear Store
-              </p>
-            </div>
-          </body>
-        </html>
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+      </head>
+
+      <body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td align="center">
+
+              <table
+                width="600"
+                cellpadding="30"
+                cellspacing="0"
+                style="
+                  background:#ffffff;
+                  margin:40px auto;
+                  border-radius:10px;
+                  box-shadow:0 5px 20px rgba(0,0,0,.08);
+                "
+              >
+
+                <tr>
+                  <td align="center">
+
+                    <h1
+                      style="
+                        color:#d4af37;
+                        margin:0;
+                        font-size:28px;
+                      "
+                    >
+                      FeetFirst.ng
+                    </h1>
+
+                    <p
+                      style="
+                        color:#777;
+                        margin-top:8px;
+                        font-size:15px;
+                      "
+                    >
+                      Premium Footwear Store
+                    </p>
+
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+
+                    <p
+                      style="
+                        font-size:16px;
+                        color:#333;
+                        line-height:1.8;
+                        white-space:pre-line;
+                      "
+                    >
+                      ${message}
+                    </p>
+
+                  </td>
+                </tr>
+
+                <tr>
+                  <td align="center">
+
+                    <hr style="border:none;border-top:1px solid #eee;">
+
+                    <p
+                      style="
+                        color:#888;
+                        font-size:13px;
+                      "
+                    >
+                      Thank you for choosing
+                      <strong>FeetFirst.ng</strong>
+                    </p>
+
+                    <p
+                      style="
+                        color:#bbb;
+                        font-size:12px;
+                      "
+                    >
+                      © ${new Date().getFullYear()} FeetFirst.ng. All rights reserved.
+                    </p>
+
+                  </td>
+                </tr>
+
+              </table>
+
+            </td>
+          </tr>
+        </table>
+
+      </body>
+      </html>
       `
     });
+
+    res.json({
+      success: true,
+      message: "Email sent successfully."
+    });
+
+  } catch (error) {
+
+    console.error("RESEND ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to send email.",
+      error: error.message
+    });
+
+  }
+});
 
     res.json({ message: "Email sent successfully" });
 
