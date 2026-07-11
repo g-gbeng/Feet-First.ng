@@ -135,7 +135,13 @@
         body: JSON.stringify({ email, password })
       });
 
-      const data = await res.json();
+console.log("Status:", res.status);
+
+const data = await res.json();
+
+console.log("Response:", data);
+
+      
 
       if (!res.ok) {
         errorMsg.style.display = "block";
@@ -149,10 +155,14 @@
       // Redirect to admin dashboard
       window.location.href = "/admin.html";
 
-    } catch (err) {
-      errorMsg.style.display = "block";
-      errorMsg.textContent = "Something went wrong. Try again.";
-    }
+    } 
+    
+    catch (err) {
+  console.error("LOGIN FETCH ERROR:", err);
+
+  errorMsg.style.display = "block";
+  errorMsg.textContent = err.message;
+}
   });
 </script>
 
