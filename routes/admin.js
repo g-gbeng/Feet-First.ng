@@ -5,25 +5,45 @@ const bcrypt = require("bcryptjs");
 
 const User = require("../models/user");
 const Order = require("../models/order");
+
 const resend = require("../utils/mailer");
 const adminAuth = require("../middleware/adminAuth");
 
+/* ============================================================
+   ADMIN LOGIN (PUBLIC)
+============================================================ */
 
-/* ===============================
-   ADMIN LOGIN (PUBLIC ROUTE)
-================================ */
 router.post("/login", async (req, res) => {
   try {
+
     const { email, password } = req.body;
 
-    const admin = await User.findOne({ email, isAdmin: true });
-    if (!admin) {
-      return res.status(401).json({ message: "Invalid credentials" });
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required."
+      });
     }
 
-    const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
+    const admin = await User.findOne({
+      email,
+      isAdmin: true
+    });
+
+    if (!admin) {
+      return res.status(401).json({
+        message: "Invalid credentials."
+      });
+    }
+
+    const passwordMatch = await bcrypt.compare(
+      password,
+      admin.password
+    );
+
+    if (!passwordMatch) {
+      return res.status(401).json({
+        message: "Invalid credentials."
+      });
     }
 
     const token = jwt.sign(
@@ -33,28 +53,41 @@ router.post("/login", async (req, res) => {
         isAdmin: true
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      {
+        expiresIn: "1d"
+      }
     );
 
-    res.json({ token });
+    res.json({
+      token
+    });
 
-  } catch (error) {
-    console.error("LOGIN ERROR:", error);
-    res.status(500).json({ message: "Server error" });
+  } catch (err) {
+
+    console.error("ADMIN LOGIN ERROR");
+    console.error(err);
+
+    res.status(500).json({
+      message: "Server error."
+    });
+
   }
 });
 
 
-/* ===============================
-   APPLY AUTH TO ALL ROUTES BELOW
-================================ */
+/* ============================================================
+   EVERYTHING BELOW THIS LINE REQUIRES ADMIN LOGIN
+============================================================ */
+
 router.use(adminAuth);
 
 
-/* ===============================
-   DASHBOARD DATA
-================================ */
+/* ============================================================
+   DASHBOARD
+============================================================ */
+
 router.get("/dashboard", async (req, res) => {
+
   try {
 
     const users = await User.find()
@@ -66,7 +99,7 @@ router.get("/dashboard", async (req, res) => {
       .sort({ createdAt: -1 });
 
     const completedOrders = orders.filter(
-      o => o.status === "completed"
+      order => order.status === "completed"
     );
 
     const totalRevenue = completedOrders.reduce(
@@ -75,28 +108,46 @@ router.get("/dashboard", async (req, res) => {
     );
 
     res.json({
+
       users,
+
       orders,
-      totalRevenue
+
+      totalRevenue,
+
+      totalUsers: users.length,
+
+      totalCompletedOrders: completedOrders.length
+
     });
 
-  } catch (error) {
-    console.error("DASHBOARD ERROR:", error);
-    res.status(500).json({ message: "Failed to load dashboard data" });
+  } catch (err) {
+
+    console.error("DASHBOARD ERROR");
+    console.error(err);
+
+    res.status(500).json({
+      message: "Unable to load dashboard."
+    });
+
   }
+
 });
 
-
-/* ===============================
+/* ============================================================
    MARK ORDER AS COMPLETED
-================================ */
+============================================================ */
+
 router.put("/orders/:id/complete", async (req, res) => {
+
   try {
 
     const order = await Order.findById(req.params.id);
 
     if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+      return res.status(404).json({
+        message: "Order not found."
+      });
     }
 
     order.status = "completed";
@@ -104,192 +155,207 @@ router.put("/orders/:id/complete", async (req, res) => {
 
     await order.save();
 
-    res.json({ message: "Order marked as completed" });
+    res.json({
+      success: true,
+      message: "Order marked as completed."
+    });
 
   } catch (err) {
-    console.error("COMPLETE ORDER ERROR:", err);
-    res.status(500).json({ message: "Failed to update order" });
+
+    console.error("COMPLETE ORDER ERROR");
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to update order."
+    });
+
   }
+
 });
 
 
-/* ===============================
+/* ============================================================
    DELETE ORDER
-================================ */
+============================================================ */
+
 router.delete("/orders/:id", async (req, res) => {
+
   try {
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        message: "Order not found."
+      });
+    }
 
     await Order.findByIdAndDelete(req.params.id);
 
-    res.json({ message: "Order deleted successfully" });
+    res.json({
+      success: true,
+      message: "Order deleted successfully."
+    });
 
   } catch (err) {
-    console.error("DELETE ORDER ERROR:", err);
-    res.status(500).json({ message: "Failed to delete order" });
+
+    console.error("DELETE ORDER ERROR");
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete order."
+    });
+
   }
+
 });
 
 
-/* ===============================
-   SEND EMAIL
-================================ */
-router.post("/send-email", async (req, res) => {
-  try {
-
-    const { to, subject, message } = req.body;
-
-    if (!to || !subject || !message) {
-      return res.status(400).json({ message: "All fields required" });
-    }
-
-   /* ===============================
+/* ============================================================
    SEND EMAIL (RESEND)
-================================ */
+============================================================ */
+
 router.post("/send-email", async (req, res) => {
+
   try {
+
     const { to, subject, message } = req.body;
 
     if (!to || !subject || !message) {
       return res.status(400).json({
-        message: "All fields are required."
+        success: false,
+        message: "Recipient, subject and message are required."
       });
     }
 
-    await resend.emails.send({
-      from: "FeetFirst <onboarding@resend.dev>", // Replace after verifying your domain
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
+
+<body style="margin:0;padding:40px;background:#f4f4f4;font-family:Segoe UI,Arial,sans-serif;">
+
+<table
+align="center"
+width="650"
+cellpadding="0"
+cellspacing="0"
+style="
+background:#ffffff;
+border-radius:12px;
+overflow:hidden;
+box-shadow:0 8px 30px rgba(0,0,0,.08);
+">
+
+<tr>
+
+<td
+style="
+background:#d4af37;
+padding:30px;
+text-align:center;
+color:white;
+font-size:30px;
+font-weight:bold;
+"
+>
+
+FeetFirst.ng
+
+</td>
+
+</tr>
+
+<tr>
+
+<td
+style="
+padding:40px;
+font-size:16px;
+line-height:1.8;
+color:#333;
+white-space:pre-line;
+"
+>
+
+${message}
+
+</td>
+
+</tr>
+
+<tr>
+
+<td
+style="
+padding:25px;
+background:#fafafa;
+text-align:center;
+font-size:13px;
+color:#888;
+"
+>
+
+Thank you for choosing
+<strong>FeetFirst.ng</strong>
+
+<br><br>
+
+© ${new Date().getFullYear()} FeetFirst.ng
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>
+`;
+
+    const response = await resend.emails.send({
+
+      from: "FeetFirst <onboarding@resend.dev>",
+
       to: [to],
-      subject: subject,
-      html: `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-      </head>
 
-      <body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+      subject,
 
-        <table width="100%" cellpadding="0" cellspacing="0">
-          <tr>
-            <td align="center">
+      html
 
-              <table
-                width="600"
-                cellpadding="30"
-                cellspacing="0"
-                style="
-                  background:#ffffff;
-                  margin:40px auto;
-                  border-radius:10px;
-                  box-shadow:0 5px 20px rgba(0,0,0,.08);
-                "
-              >
-
-                <tr>
-                  <td align="center">
-
-                    <h1
-                      style="
-                        color:#d4af37;
-                        margin:0;
-                        font-size:28px;
-                      "
-                    >
-                      FeetFirst.ng
-                    </h1>
-
-                    <p
-                      style="
-                        color:#777;
-                        margin-top:8px;
-                        font-size:15px;
-                      "
-                    >
-                      Premium Footwear Store
-                    </p>
-
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>
-
-                    <p
-                      style="
-                        font-size:16px;
-                        color:#333;
-                        line-height:1.8;
-                        white-space:pre-line;
-                      "
-                    >
-                      ${message}
-                    </p>
-
-                  </td>
-                </tr>
-
-                <tr>
-                  <td align="center">
-
-                    <hr style="border:none;border-top:1px solid #eee;">
-
-                    <p
-                      style="
-                        color:#888;
-                        font-size:13px;
-                      "
-                    >
-                      Thank you for choosing
-                      <strong>FeetFirst.ng</strong>
-                    </p>
-
-                    <p
-                      style="
-                        color:#bbb;
-                        font-size:12px;
-                      "
-                    >
-                      © ${new Date().getFullYear()} FeetFirst.ng. All rights reserved.
-                    </p>
-
-                  </td>
-                </tr>
-
-              </table>
-
-            </td>
-          </tr>
-        </table>
-
-      </body>
-      </html>
-      `
     });
+
+    console.log("RESEND RESPONSE:");
+    console.log(response);
 
     res.json({
+
       success: true,
+
       message: "Email sent successfully."
+
     });
 
-  } catch (error) {
+  } catch (err) {
 
-    console.error("RESEND ERROR:", error);
+    console.error("RESEND EMAIL ERROR");
+    console.error(err);
 
     res.status(500).json({
+
       success: false,
-      message: "Failed to send email.",
-      error: error.message
+
+      message: err.message || "Failed to send email."
+
     });
 
   }
+
 });
-
-    res.json({ message: "Email sent successfully" });
-
-  } catch (error) {
-    console.error("EMAIL ERROR:", error);
-    res.status(500).json({ message: "Email failed to send" });
-  }
-});
-
 
 module.exports = router;
