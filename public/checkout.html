@@ -15,6 +15,9 @@
 body {
   background: #ffffff;
   font-family: "Segoe UI", sans-serif;
+
+  opacity: 0;
+  transition: opacity .8s ease;
 }
 
 .gold-btn {
@@ -37,12 +40,29 @@ body {
   border-bottom: 1px solid #eee;
   padding: 10px 0;
 }
+
+/* ===============================
+   FADE UP ANIMATION
+================================ */
+.fade-up{
+    opacity:0;
+    transform:translateY(30px);
+    transition:
+        opacity .8s ease,
+        transform .8s ease;
+}
+
+.fade-up.show{
+    opacity:1;
+    transform:translateY(0);
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="container my-5">
+<div class="container my-5 fade-up">
   <h3 class="text-center mb-4">Checkout</h3>
 
   <div class="order-box">
@@ -196,7 +216,7 @@ async function placeOrder() {
 
   message += `\n *Total:* ₦${total.toLocaleString()}\n`;
 
-  const WHATSAPP_NUMBER = "2349069436272";
+  const WHATSAPP_NUMBER = "2348144863093";
 
   const whatsappURL =
     `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
@@ -204,7 +224,15 @@ async function placeOrder() {
   window.location.href = whatsappURL;
 }
 
-renderCheckout();</script>
+renderCheckout();
+window.addEventListener("load", () => {
+
+    document.body.style.opacity = "1";
+
+    document.querySelector(".fade-up").classList.add("show");
+
+});
+</script>
 
 </body>
 </html>

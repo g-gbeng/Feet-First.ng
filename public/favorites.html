@@ -16,6 +16,21 @@
 body {
   background: #fff;
   font-family: "Segoe UI", sans-serif;
+
+
+/* ==========================
+   PAGE FADE IN
+========================== */
+    opacity:0;
+    transform:translateY(12px);
+    transition:
+        opacity .7s ease,
+        transform .7s ease;
+}
+
+body.loaded{
+    opacity:1;
+    transform:translateY(0);
 }
 
 /* ===== TOP BAR ===== */
@@ -115,8 +130,23 @@ body {
 
 <!-- CONTENT -->
 <div class="container my-5">
-  <h3 class="mb-4 text-center">Saved Items</h3>
-  <div id="favoritesList"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h3 class="m-0">Saved Items</h3>
+
+        <button
+            class="btn btn-outline-danger"
+            id="clearFavoritesBtn"
+            onclick="clearFavorites()"
+        >
+            Clear Favorites
+        </button>
+
+    </div>
+
+    <div id="favoritesList"></div>
+
 </div>
 
 <!-- Size Selection Modal -->
@@ -215,14 +245,18 @@ function renderFavorites() {
 
     container.innerHTML = "";
 
+    const clearBtn =
+    document.getElementById("clearFavoritesBtn");
+
     if (!favorites.length) {
 
         container.innerHTML =
         "<p class='text-center text-muted'>You have no saved items.</p>";
-
+        clearBtn.disabled = true;
         return;
-
     }
+
+    clearBtn.disabled = false;
 
     favorites.forEach((item,index)=>{
 
@@ -432,6 +466,35 @@ function removeFavorite(index){
 
 }
 
+function clearFavorites(){
+
+    if(!favorites.length){
+
+        alert("You have no saved items.");
+
+        return;
+
+    }
+
+    if(!confirm("Clear all saved items?")){
+
+        return;
+
+    }
+
+    favorites = [];
+
+    localStorage.setItem(
+        FAV_KEY,
+        JSON.stringify(favorites)
+    );
+
+    updateBadges();
+
+    renderFavorites();
+
+}
+
 /* ------------------------------
 NAVIGATION
 ------------------------------ */
@@ -455,5 +518,9 @@ INITIALIZE
 updateBadges();
 
 renderFavorites();
+
+window.addEventListener("load", () => {
+    document.body.classList.add("loaded");
+});
 
 </script>

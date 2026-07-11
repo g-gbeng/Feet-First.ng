@@ -23,7 +23,11 @@ body {
   background: var(--bg);
   color: var(--text-main);
   margin: 0;
+
+  opacity: 0;
+  transition: opacity .6s ease;
 }
+
 
 /* ===============================
    TOP BAR
@@ -214,10 +218,13 @@ async function loadProfile() {
 
     profileAvatar.textContent = initials(user.name);
     topAvatar.textContent = initials(user.name);
+    document.body.style.opacity = "1";
 
-  } catch {
-    window.location.href = "/login.html";
-  }
+  } 
+  catch (err) {
+  console.error(err);
+  window.location.href = "/login.html";
+}
 }
 
 loadProfile();
@@ -229,6 +236,7 @@ logoutBtn.onclick = () => {
   localStorage.clear();
   window.location.href = "/login.html";
 };
+
 </script>
 
 </body>

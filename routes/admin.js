@@ -223,12 +223,16 @@ router.post("/send-email", async (req, res) => {
 
     const { to, subject, message } = req.body;
 
-    if (!to || !subject || !message) {
-      return res.status(400).json({
-        success: false,
-        message: "Recipient, subject and message are required."
-      });
-    }
+   if(
+    !to ||
+    (Array.isArray(to) && to.length===0) ||
+    !subject ||
+    !message
+){
+    return res.status(400).json({
+        message:"All fields required."
+    });
+}
 
     const html = `
 <!DOCTYPE html>
@@ -318,28 +322,40 @@ Thank you for choosing
 </html>
 `;
 
+console.log("=========== EMAIL REQUEST ===========");
+console.log("TO:", to);
+console.log("SUBJECT:", subject);
+console.log("MESSAGE:", message);
+console.log("=====================================");
+
     const response = await resend.emails.send({
 
-      from: "FeetFirst <onboarding@resend.dev>",
+    from: "FeetFirst <onboarding@resend.dev>",
+    to: [to],
+    subject,
+    html
 
-      to: [to],
+});
 
-      subject,
+if (response.error) {
 
-      html
+    console.error(response.error);
 
-    });
+    return res.status(response.error.statusCode || 500).json({
 
-    console.log("RESEND RESPONSE:");
-    console.log(response);
-
-    res.json({
-
-      success: true,
-
-      message: "Email sent successfully."
+        success: false,
+        message: response.error.message
 
     });
+
+}
+
+res.json({
+
+    success: true,
+    message: "Email sent successfully."
+
+});
 
   } catch (err) {
 

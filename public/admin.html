@@ -5,32 +5,149 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 
   <style>
-    :root{
-      --gold:#d4af37;
+:root{
+    --gold:#d4af37;
+    --gold-dark:#b8962e;
+    --bg:#f8f8f8;
+    --white:#fff;
+}
+
+body{
+    background:var(--bg);
+    font-family:"Segoe UI",sans-serif;
+    opacity:0;
+    transition:opacity .7s ease;
+}
+
+/* ===============================
+PAGE ANIMATION
+=============================== */
+
+.fade-up{
+    opacity:0;
+    transform:translateY(25px);
+    transition:.7s ease;
+}
+
+.fade-up.show{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* ===============================
+HEADER
+=============================== */
+
+.dashboard-header{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.dashboard-header h2{
+    font-weight:700;
+}
+
+.btn-gold{
+    background:var(--gold);
+    color:#fff;
+    border:none;
+    font-weight:600;
+}
+
+.btn-gold:hover{
+    background:var(--gold-dark);
+    color:#fff;
+}
+
+.btn-outline-gold{
+    border:1px solid var(--gold);
+    color:var(--gold);
+}
+
+.btn-outline-gold:hover{
+    background:var(--gold);
+    color:#fff;
+}
+
+/* ===============================
+CARDS
+=============================== */
+
+.dashboard-card{
+    background:#fff;
+    border:none;
+    border-radius:16px;
+    box-shadow:0 8px 25px rgba(0,0,0,.05);
+    transition:.3s;
+    height:100%;
+}
+
+.dashboard-card:hover{
+    transform:translateY(-4px);
+}
+
+.stat-title{
+    color:#888;
+    font-size:.9rem;
+}
+
+.stat-value{
+    font-size:2rem;
+    font-weight:700;
+    color:var(--gold);
+}
+
+/* ===============================
+SECTION CARDS
+=============================== */
+
+.section-card{
+    background:#fff;
+    border-radius:18px;
+    padding:25px;
+    margin-top:25px;
+    box-shadow:0 8px 25px rgba(0,0,0,.05);
+}
+
+.section-title{
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+/* ===============================
+TABLES
+=============================== */
+
+.table thead{
+    background:#111;
+    color:#fff;
+}
+
+.table td,
+.table th{
+    vertical-align:middle;
+}
+
+/* ===============================
+SEARCH
+=============================== */
+
+.form-control{
+    border-radius:10px;
+}
+
+/* ===============================
+RESPONSIVE
+=============================== */
+
+@media(max-width:991px){
+
+    .stats-row>div{
+        margin-bottom:20px;
     }
 
-    .dashboard-header{
-      text-align:center;
-      margin-bottom:20px;
-    }
-
-    .btn-gold{
-      background:var(--gold);
-      color:#fff;
-      border:none;
-      font-weight:600;
-    }
-
-    .btn-gold:hover{
-      background:#b8962e;
-      color:#fff;
-    }
-
-    .email-card{
-      border-radius:10px;
-      box-shadow:0 5px 20px rgba(0,0,0,0.05);
-    }
-  </style>
+}
+</style>
 </head>
 
 <body class="container mt-4">
@@ -47,154 +164,292 @@
 
 <!-- ================= STATS SECTION ================= -->
 
-<div class="row mt-4">
+<div class="row stats-row fade-up">
 
-  <div class="col-md-4">
-    <div class="card p-3">
-      <h5>Total Users</h5>
-      <h3 id="totalUsers">0</h3>
+    <div class="col-lg-3 col-md-6 mb-3">
+
+        <div class="dashboard-card p-4">
+
+            <div class="stat-title">
+                Total Users
+            </div>
+
+            <div
+            class="stat-value"
+            id="totalUsers">
+            0
+            </div>
+
+        </div>
+
     </div>
-  </div>
 
-  <div class="col-md-4">
-    <div class="card p-3">
-      <h5>Completed Orders</h5>
-      <h3 id="totalOrders">0</h3>
+    <div class="col-lg-3 col-md-6 mb-3">
+
+        <div class="dashboard-card p-4">
+
+            <div class="stat-title">
+                Pending Orders
+            </div>
+
+            <div
+            class="stat-value"
+            id="pendingCount">
+            0
+            </div>
+
+        </div>
+
     </div>
-  </div>
 
-  <div class="col-md-4">
-    <div class="card p-3">
-      <h5>Total Revenue</h5>
-      <h3 id="totalRevenue">₦0</h3>
+    <div class="col-lg-3 col-md-6 mb-3">
+
+        <div class="dashboard-card p-4">
+
+            <div class="stat-title">
+                Completed Orders
+            </div>
+
+            <div
+            class="stat-value"
+            id="totalOrders">
+            0
+            </div>
+
+        </div>
+
     </div>
-  </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+
+        <div class="dashboard-card p-4">
+
+            <div class="stat-title">
+                Revenue
+            </div>
+
+            <div
+            class="stat-value"
+            id="totalRevenue">
+            ₦0
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
-<!-- ================= USERS SECTION ================= -->
+<div class="row mt-4 fade-up">
 
-<hr>
+    <!-- USERS -->
 
-<h4>Registered Users</h4>
+    <div class="col-lg-6 mb-4">
 
-<input
-type="text"
-id="userSearch"
-class="form-control mb-2"
-placeholder="Search users..."
->
+        <div class="section-card">
 
-<table class="table table-bordered">
-<thead>
-<tr>
-<th>#</th>
-<th>Name</th>
-<th>Email</th>
-<th>Action</th>
-</tr>
-</thead>
+            <h4 class="section-title">
+                Registered Users
+            </h4>
 
-<tbody id="usersTable"></tbody>
+            <input
+            id="userSearch"
+            class="form-control mb-3"
+            placeholder="Search users...">
 
-</table>
+            <div class="table-responsive">
 
-<!-- ================= EMAIL SECTION ================= -->
+                <table class="table table-bordered">
 
-<hr>
+                    <thead>
 
-<h4>Send Email</h4>
+                    <tr>
 
-<div class="card p-4 email-card">
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Orders</th>
 
-<div class="form-group">
-<label>To (Email)</label>
-<input
-type="email"
-id="emailTo"
-class="form-control"
-placeholder="Enter email address"
->
+                    </tr>
+
+                    </thead>
+
+                    <tbody id="usersTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- EMAIL -->
+
+    <div class="col-lg-6 mb-4">
+
+        <div class="section-card">
+
+            <h4 class="section-title">
+                Send Email
+            </h4>
+
+            <div class="form-group">
+
+                <label>Recipient</label>
+
+                <input
+                list="emailSuggestions"
+                id="emailTo"
+                class="form-control"
+                placeholder="Search email or select">
+
+                <datalist id="emailSuggestions">
+
+                </datalist>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Subject</label>
+
+                <input
+                id="emailSubject"
+                class="form-control">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Message</label>
+
+                <textarea
+                id="emailMessage"
+                rows="5"
+                class="form-control"></textarea>
+
+            </div>
+
+            <button
+            class="btn btn-gold btn-block"
+            onclick="sendEmail()">
+
+                Send Email
+
+            </button>
+
+        </div>
+
+    </div>
+
 </div>
-
-<div class="form-group">
-<label>Subject</label>
-<input
-type="text"
-id="emailSubject"
-class="form-control"
->
-</div>
-
-<div class="form-group">
-<label>Message</label>
-<textarea
-id="emailMessage"
-class="form-control"
-rows="4"
-></textarea>
-</div>
-
-<button
-class="btn btn-gold"
-onclick="sendEmail()"
->
-Send Email
-</button>
-
-</div>
-
 <!-- ================= ORDERS SECTION ================= -->
 
-<hr>
+<div class="section-card fade-up">
 
-<h4>Orders</h4>
+    <h3 class="section-title">
+        Orders
+    </h3>
 
-<input
-type="text"
-id="orderSearch"
-class="form-control mb-2"
-placeholder="Search orders by ID, name or email..."
->
+    <input
+        type="text"
+        id="orderSearch"
+        class="form-control mb-4"
+        placeholder="Search by Order ID, customer or email..."
+    >
 
-<h5>Pending Orders</h5>
+    <div class="row">
 
-<table class="table table-bordered">
+        <!-- Pending -->
 
-<thead>
-<tr>
-<th>Order ID</th>
-<th>User</th>
-<th>Email</th>
-<th>Items</th>
-<th>Total</th>
-<th>Status</th>
-</tr>
-</thead>
+        <div class="col-lg-6 mb-4">
 
-<tbody id="pendingOrders"></tbody>
+            <h5 class="mb-3">
 
-</table>
+                Pending Orders
 
-<h5>Completed Orders</h5>
+                <span
+                    id="pendingBadge"
+                    class="badge badge-warning ml-2"
+                >
+                    0
+                </span>
 
-<table class="table table-bordered">
+            </h5>
 
-<thead>
-<tr>
-<th>Order ID</th>
-<th>User</th>
-<th>Email</th>
-<th>Items</th>
-<th>Total</th>
-<th>Status</th>
-</tr>
-</thead>
+            <div class="table-responsive">
 
-<tbody id="completedOrders"></tbody>
+                <table class="table table-hover">
 
-</table>
+                    <thead>
 
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody id="pendingOrders"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- Completed -->
+
+        <div class="col-lg-6 mb-4">
+
+            <h5 class="mb-3">
+
+                Completed Orders
+
+                <span
+                    id="completedBadge"
+                    class="badge badge-success ml-2"
+                >
+                    0
+                </span>
+
+            </h5>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody id="completedOrders"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 <script>
 
 const adminToken = localStorage.getItem("adminToken");
@@ -217,6 +472,7 @@ currency:'NGN'
 
 let users=[];
 let orders=[];
+document.body.style.opacity = "0";
 
 async function loadDashboard(){
 
@@ -234,6 +490,7 @@ return;
 }
 
 const data=await res.json();
+document.body.style.opacity="1";
 
 users=data.users;
 orders=data.orders;
@@ -241,14 +498,24 @@ orders=data.orders;
 renderUsers(users);
 renderOrders(orders);
 
-document.getElementById('totalUsers').textContent=users.length;
+document.getElementById("totalUsers").textContent = users.length;
 
-const completedCount=orders.filter(o=>o.status==="completed").length;
+const completedCount =
+    orders.filter(o => o.status === "completed").length;
 
-document.getElementById('totalOrders').textContent=completedCount;
+const pendingCount =
+    orders.filter(o => o.status === "pending").length;
 
-document.getElementById('totalRevenue').textContent=
-formatNaira(data.totalRevenue);
+document.getElementById("pendingCount").textContent =
+    pendingCount;
+
+document.getElementById("totalOrders").textContent =
+    completedCount;
+
+document.getElementById("totalRevenue").textContent =
+    formatNaira(data.totalRevenue);
+
+populateEmailSuggestions();
 
 }catch(err){
 console.error(err);
@@ -258,90 +525,251 @@ console.error(err);
 
 function renderUsers(list){
 
-const tbody=document.getElementById('usersTable');
+    const tbody =
+        document.getElementById("usersTable");
 
-tbody.innerHTML='';
+    tbody.innerHTML = "";
 
-list.forEach((user,i)=>{
+    list.forEach((user,index)=>{
 
-tbody.innerHTML+=`
-<tr>
-<td>${i+1}</td>
-<td>${user.name}</td>
-<td>${user.email}</td>
-<td>-</td>
-</tr>
-`;
+        const orderCount =
+            orders.filter(order =>
 
-});
+                order.user &&
+                order.user._id === user._id
+
+            ).length;
+
+        tbody.innerHTML += `
+
+        <tr>
+
+            <td>${index+1}</td>
+
+            <td>${user.name}</td>
+
+            <td>${user.email}</td>
+
+            <td>
+
+                <span class="badge badge-warning">
+
+                    ${orderCount}
+
+                </span>
+
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+}
+
+function populateEmailSuggestions(){
+
+    const list =
+        document.getElementById("emailSuggestions");
+
+    list.innerHTML="";
+
+    list.innerHTML += `
+        <option value="ALL USERS">
+    `;
+
+    users.forEach(user=>{
+
+        list.innerHTML += `
+            <option value="${user.email}">
+        `;
+
+    });
 
 }
 
 function renderOrders(list){
 
-const pending=document.getElementById('pendingOrders');
-const completed=document.getElementById('completedOrders');
+    const pending =
+        document.getElementById("pendingOrders");
 
-pending.innerHTML='';
-completed.innerHTML='';
+    const completed =
+        document.getElementById("completedOrders");
 
-list.forEach((order)=>{
+    pending.innerHTML = "";
+    completed.innerHTML = "";
 
-const row=`
+    let pendingCount = 0;
+    let completedCount = 0;
 
-<tr>
+    list.forEach(order=>{
 
-<td>${order.orderId||order._id}</td>
+        const statusBadge =
+            order.status==="completed"
 
-<td>${order.user?.name||"N/A"}</td>
+            ?
 
-<td>${order.user?.email||"N/A"}</td>
+            `<span class="badge badge-success">
+                Completed
+            </span>`
 
-<td>${order.items.map(item=>item.name||"Item").join(', ')}</td>
+            :
 
-<td>${formatNaira(order.total)}</td>
+            `<span class="badge badge-warning">
+                Pending
+            </span>`;
 
-<td>
+        const row = `
 
-<div class="d-flex flex-nowrap align-items-center">
+        <tr>
 
-${order.status === "pending" ? `
-<button
-class="btn btn-sm btn-success mr-2"
-onclick="markCompleted('${order._id}')"
->
-Completed
-</button>
-` : ''}
+            <td>
+                ${order.orderId||order._id}
+            </td>
 
-<button
-class="btn btn-sm btn-danger"
-onclick="deleteOrder('${order._id}')"
->
-Delete
-</button>
+            <td>
 
-</div>
+                <strong>
 
-</td>
+                    ${order.user?.name||"Unknown"}
 
-</tr>
+                </strong>
 
-`;
+                <br>
 
-if(order.status==="pending"){
-pending.innerHTML+=row;
-}else{
-completed.innerHTML+=row;
-}
+                <small class="text-muted">
 
-});
+                    ${order.user?.email||""}
+
+                </small>
+
+            </td>
+
+            <td>
+
+                ${formatNaira(order.total)}
+
+            </td>
+
+            <td>
+
+                ${statusBadge}
+
+            </td>
+
+            <td>
+
+                <div class="d-flex">
+
+                ${
+                    order.status==="pending"
+
+                    ?
+
+                    `
+
+                    <button
+                        class="btn btn-sm btn-gold mr-2"
+                        onclick="markCompleted('${order._id}')">
+
+                        ✓
+
+                    </button>
+
+                    `
+
+                    :
+
+                    ""
+
+                }
+
+                <button
+                    class="btn btn-sm btn-outline-gold"
+                    onclick="deleteOrder('${order._id}')">
+
+                    ✕
+
+                </button>
+
+                </div>
+
+            </td>
+
+        </tr>
+
+        `;
+
+        if(order.status==="pending"){
+
+            pending.innerHTML += row;
+
+            pendingCount++;
+
+        }
+
+        else{
+
+            completed.innerHTML += row;
+
+            completedCount++;
+
+        }
+
+    });
+
+    if(!pendingCount){
+
+        pending.innerHTML=`
+
+        <tr>
+
+        <td colspan="5" class="text-center text-muted">
+
+        No pending orders
+
+        </td>
+
+        </tr>
+
+        `;
+
+    }
+
+    if(!completedCount){
+
+        completed.innerHTML=`
+
+        <tr>
+
+        <td colspan="5" class="text-center text-muted">
+
+        No completed orders
+
+        </td>
+
+        </tr>
+
+        `;
+
+    }
+
+    document.getElementById("pendingBadge").textContent =
+        pendingCount;
+
+    document.getElementById("completedBadge").textContent =
+        completedCount;
 
 }
 
 async function markCompleted(id){
 
-if(!confirm("Mark this order as completed?")) return;
+if(
+!window.confirm(
+"Mark this order as completed?"
+)
+) return;
 
 await fetch(`/api/admin/orders/${id}/complete`,{
 method:"PUT",
@@ -350,13 +778,17 @@ Authorization:`Bearer ${adminToken}`
 }
 });
 
-loadDashboard();
+await loadDashboard();
 
 }
 
 async function deleteOrder(id){
 
-if(!confirm("Are you sure you want to delete this order?")) return;
+if(
+!window.confirm(
+"Delete this order permanently?"
+)
+) return;
 
 await fetch(`/api/admin/orders/${id}`,{
 method:"DELETE",
@@ -365,7 +797,7 @@ Authorization:`Bearer ${adminToken}`
 }
 });
 
-loadDashboard();
+await loadDashboard();
 
 }
 
@@ -386,67 +818,180 @@ u.email.toLowerCase().includes(value)
 
 });
 
-document.getElementById('orderSearch').addEventListener('input',(e)=>{
+document.getElementById("orderSearch")
+.addEventListener("input",(e)=>{
 
-const value=e.target.value.toLowerCase();
+    const value =
+        e.target.value.toLowerCase().trim();
 
-renderOrders(
+    renderOrders(
 
-orders.filter(o=>
+        orders.filter(order=>{
 
-(o.orderId&&o.orderId.toLowerCase().includes(value))||
+            return(
 
-(o.user?.name&&o.user.name.toLowerCase().includes(value))||
+                (order.orderId||"")
+                .toLowerCase()
+                .includes(value)
 
-(o.user?.email&&o.user.email.toLowerCase().includes(value))
+                ||
 
-)
+                (order.user?.name||"")
+                .toLowerCase()
+                .includes(value)
 
-);
+                ||
+
+                (order.user?.email||"")
+                .toLowerCase()
+                .includes(value)
+
+            );
+
+        })
+
+    );
+
+});
+async function sendEmail() {
+
+    const recipient =
+        document.getElementById("emailTo").value.trim();
+
+    const subject =
+        document.getElementById("emailSubject").value.trim();
+
+    const message =
+        document.getElementById("emailMessage").value.trim();
+
+    if (!recipient || !subject || !message) {
+
+        alert("Please complete all fields.");
+
+        return;
+
+    }
+
+    let to = recipient;
+
+    // Send to everyone
+    if (recipient.toUpperCase() === "ALL USERS") {
+
+        to = users.map(user => user.email);
+
+        if (!to.length) {
+
+            alert("No users found.");
+
+            return;
+
+        }
+
+    }
+
+    const button = document.querySelector(
+        ".btn-gold.btn-block"
+    );
+
+    const originalText = button.innerHTML;
+
+    button.disabled = true;
+    button.innerHTML = "Sending...";
+
+    try {
+
+        const res = await fetch("/api/admin/send-email", {
+
+            method: "POST",
+
+            headers: {
+
+                "Content-Type": "application/json",
+
+                Authorization: `Bearer ${adminToken}`
+
+            },
+
+            body: JSON.stringify({
+
+                to,
+                subject,
+                message
+
+            })
+
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+
+            throw new Error(
+                data.message || "Unable to send email."
+            );
+
+        }
+
+        alert("Email sent successfully.");
+
+        document.getElementById("emailTo").value = "";
+        document.getElementById("emailSubject").value = "";
+        document.getElementById("emailMessage").value = "";
+
+    }
+    catch (err) {
+
+        console.error(err);
+
+        alert(err.message);
+
+    }
+    finally {
+
+        button.disabled = false;
+        button.innerHTML = originalText;
+
+    }
+
+}
+
+
+window.addEventListener("load", () => {
+
+    document.body.style.opacity = "1";
+
+    document.querySelectorAll(".fade-up").forEach((el, i) => {
+
+        setTimeout(() => {
+
+            el.classList.add("show");
+
+        }, i * 120);
+
+    });
 
 });
 
-async function sendEmail(){
 
-try{
+window.addEventListener("load",async()=>{
 
-const res=await fetch('/api/admin/send-email',{
+    document.body.style.opacity="1";
 
-method:'POST',
+    document
+        .querySelectorAll(".fade-up")
+        .forEach((card,index)=>{
 
-headers:{
-'Content-Type':'application/json',
-Authorization:`Bearer ${adminToken}`
-},
+            setTimeout(()=>{
 
-body:JSON.stringify({
+                card.classList.add("show");
 
-to:document.getElementById('emailTo').value,
-subject:document.getElementById('emailSubject').value,
-message:document.getElementById('emailMessage').value
+            },index*120);
 
-})
+        });
+
+    await loadDashboard();
 
 });
-
-const data=await res.json();
-
-if(!res.ok){
-alert(data.message||"Email failed");
-return;
-}
-
-alert("Email sent successfully");
-
-}catch(err){
-
-alert("Something went wrong");
-
-}
-
-}
-
-loadDashboard();
 
 </script>
 

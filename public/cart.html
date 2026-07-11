@@ -16,6 +16,9 @@
 body {
   background: #fff;
   font-family: "Segoe UI", sans-serif;
+
+  opacity: 0;
+  transition: opacity .8s ease;
 }
 
 .cart-item {
@@ -43,12 +46,27 @@ button:disabled {
   background: #ddd;
   cursor: not-allowed;
 }
+/* ===============================
+   FADE UP
+================================ */
+.fade-up{
+    opacity:0;
+    transform:translateY(30px);
+    transition:
+        opacity .8s ease,
+        transform .8s ease;
+}
+
+.fade-up.show{
+    opacity:1;
+    transform:translateY(0);
+}
 </style>
 </head>
 
 <body>
 
-<div class="container my-5">
+<div class="container my-5 fade-up">
   <h3 class="mb-4 text-center">Your Cart</h3>
 
   <div id="cartItems"></div>
@@ -166,6 +184,15 @@ function saveCart() {
 }
 
 renderCart();
+
+window.addEventListener("load", () => {
+
+    document.body.style.opacity = "1";
+
+    document.querySelector(".fade-up").classList.add("show");
+
+});
+
 </script>
 
 </body>
