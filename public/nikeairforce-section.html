@@ -266,7 +266,7 @@ async function loadProducts() {
     container.innerHTML += `
       <div class="col-lg-4 col-md-6 mb-4">
         <div class="product-card ${!p.inStock ? "out-of-stock" : ""}">
-          <img src="/images/${p.image}">
+          <img src="${p.image}">
           <h6 class="mt-2">${p.name}</h6>
           <p class="price">₦${p.price.toLocaleString()}</p>
 
