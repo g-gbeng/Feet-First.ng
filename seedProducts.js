@@ -292,7 +292,7 @@ const products = [
         brand: "New Balance",
         price: 135000,
         sizes: [41, 42, 43, 44, 45],
-        image: "/images/990v4.webp",
+        image: "/images/990v4 Core.webp",
         inStock: true
     },
 
@@ -306,7 +306,7 @@ const products = [
         brand: "AirMax",
         price: 65000,
         sizes: [43, 44, 45],
-        image: "/images/Nike Air-Max 1.png",
+        image: "/images/Air-Max 1.png",
         inStock: true
     },
 
@@ -554,7 +554,7 @@ const products = [
         brand: "Jordans",
         price: 120000,
         sizes: [43, 44, 45],
-        image: "/images/J4 Retro.png",
+        image: "/images/J4 retro.png",
         inStock: true
     },
 

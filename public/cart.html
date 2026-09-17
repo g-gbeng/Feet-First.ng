@@ -134,7 +134,7 @@ function renderCart() {
 
     cartItems.innerHTML += `
       <div class="cart-item d-flex align-items-center gap-3">
-        <img src="/images/${item.image}" width="80">
+        <img src="${item.image}" width="80" alt="${item.name}">
 
         <div class="flex-grow-1">
           <strong>${item.name}</strong><br>

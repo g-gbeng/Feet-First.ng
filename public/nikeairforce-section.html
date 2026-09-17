@@ -328,7 +328,7 @@ function renderCart() {
     total += p.price * p.qty;
     cartItems.innerHTML += `
       <div class="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
-        <img src="/images/${p.image}" width="50">
+        <img src="${p.image}" width="50" alt="${p.name}">
         <div class="flex-grow-1">
           <small><strong>${p.name}</strong></small><br>
           <small>Size: ${p.size}</small><br>
