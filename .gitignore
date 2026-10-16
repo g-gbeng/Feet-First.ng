@@ -1,0 +1,14 @@
+# secrets: never commit these
+.env
+.env.*
+!.env.example
+
+# installed packages (npm install recreates them)
+node_modules/
+
+# macOS folder files
+.DS_Store
+
+# logs
+*.log
+npm-debug.log*

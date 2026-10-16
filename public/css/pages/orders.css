@@ -1,0 +1,176 @@
+/* =========================================
+   MY ORDERS
+========================================= */
+
+.ordersPage {
+    max-width: 860px;
+    padding-top: 36px;
+    padding-bottom: 40px;
+}
+
+.orderCard {
+    margin-bottom: 18px;
+    padding: 20px 22px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+}
+
+.orderCard.needsPayment {
+    border-color: #f3d19c;
+    background: #fffcf5;
+}
+
+.orderTop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.orderTop h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    word-break: break-all;
+}
+
+.orderTop .when {
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+.badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* progress: paid -> shipped -> delivered */
+.progressSteps {
+    display: flex;
+    margin: 18px 0 6px;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+}
+
+.progressSteps li {
+    position: relative;
+    flex: 1;
+    padding-top: 30px;
+    color: var(--muted);
+    font-size: .85rem;
+    text-align: center;
+}
+
+.progressSteps li::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin-left: -8px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    background: #fff;
+    z-index: 1;
+}
+
+.progressSteps li + li::after {
+    content: "";
+    position: absolute;
+    top: 13px;
+    right: 50%;
+    width: 100%;
+    height: 2px;
+    background: #ddd;
+}
+
+.progressSteps li.done {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.progressSteps li.done::before {
+    border-color: var(--gold);
+    background: var(--gold);
+}
+
+.progressSteps li.done::after {
+    background: var(--gold);
+}
+
+.riderBox {
+    margin: 12px 0 4px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #eef4ff;
+    font-size: .95rem;
+}
+
+.riderBox a {
+    font-weight: 600;
+}
+
+.orderItems {
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.orderItems li {
+    display: grid;
+    grid-template-columns: 52px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 0;
+    border-top: 1px solid var(--line);
+    font-size: .95rem;
+}
+
+.orderItems img {
+    width: 52px;
+    height: 42px;
+    border-radius: 8px;
+    background: #fafafa;
+    object-fit: contain;
+}
+
+.orderItems small {
+    display: block;
+    color: var(--muted);
+}
+
+.orderBottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+}
+
+.orderBottom .total {
+    font-size: 1.1rem;
+}
+
+.orderBottom .total strong {
+    color: var(--gold-dark);
+}
+
+.orderBottom .address {
+    width: 100%;
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+.payHint {
+    margin: 10px 0 0;
+    color: #8a5300;
+    font-size: .92rem;
+}

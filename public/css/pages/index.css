@@ -1,0 +1,86 @@
+/* =========================================
+   LANDING PAGE
+========================================= */
+
+body {
+    position: relative;
+    min-height: 100vh;
+    background: #111;
+    color: #fff;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: url("../../images/IMG_9581.JPG") center / cover no-repeat;
+}
+
+.landing {
+    padding-top: 40px;
+    padding-bottom: 30px;
+    animation: rise .8s ease both;
+}
+
+.hero {
+    margin-bottom: 40px;
+    padding: 3rem 2rem;
+    border-radius: 1rem;
+    background: rgba(0, 0, 0, .6);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .5);
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.hero .cta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.section-card {
+    height: 100%;
+    padding: 2rem;
+    border-radius: 1rem;
+    background: rgba(0, 0, 0, .55);
+    text-align: center;
+    transition: transform .3s, box-shadow .3s;
+}
+
+.section-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, .6);
+}
+
+.section-card h2 {
+    font-size: 1.6rem;
+}
+
+.landingFooter {
+    margin-top: 3rem;
+    padding: 1rem;
+    border-radius: .5rem;
+    background: rgba(0, 0, 0, .6);
+    text-align: center;
+}
+
+.landingFooter p {
+    margin: 0;
+}
+
+.landingFooter a {
+    color: #ffd700;
+}
+
+@keyframes rise {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: none; }
+}

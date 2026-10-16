@@ -1,0 +1,40 @@
+/* =========================================
+   PRIVACY POLICY AND TERMS OF SERVICE
+========================================= */
+
+body {
+    position: relative;
+    min-height: 100vh;
+    background: #111;
+    color: #fff;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(rgba(0, 0, 0, .55), rgba(0, 0, 0, .55)), url("../../images/IMG_9582.JPG") center / cover no-repeat;
+}
+
+.legal {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.legal h1 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.legalFooter {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.legalFooter a {
+    color: #ffd700;
+}

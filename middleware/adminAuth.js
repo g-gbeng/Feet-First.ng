@@ -1,24 +1,32 @@
-const jwt = require("jsonwebtoken");
+/*
+  Signed-in admin. The admin cookie is checked, and the account must still be an admin
+  in the database (so removing isAdmin takes effect straight away).
+*/
 
-module.exports = function (req, res, next) {
+const User = require("../models/user");
 
-  const token = req.headers.authorization?.split(" ")[1];
+const { readSession, signOut } = require("../utils/http");
 
-  if (!token) {
-    return res.status(401).send("Access denied");
-  }
+async function adminAuth(req, res, next) {
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const session = readSession(req, "admin");
 
-    if (!decoded.isAdmin) {
-      return res.status(403).send("Not authorized");
+    const admin = session && session.isAdmin
+        ? await User.findOne({ _id: session.id, isAdmin: true }).select("name email isAdmin")
+        : null;
+
+    if (!admin) {
+
+        if (session) signOut(res, "admin");
+
+        return res.status(401).json({ success: false, message: "Please log in as an admin." });
+
     }
 
-    req.admin = decoded;
+    req.admin = admin;
+
     next();
 
-  } catch (err) {
-    res.status(401).send("Invalid token");
-  }
-};
+}
+
+module.exports = adminAuth;

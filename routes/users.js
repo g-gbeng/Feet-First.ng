@@ -1,141 +1,151 @@
+/*
+  Customer accounts: sign up, log in, log out, profile and password.
+  Signing in sets an httpOnly cookie (see utils/http.js); pages never see the token.
+*/
+
 const express = require("express");
-const router = express.Router();
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+
+const router = express.Router();
 
 const User = require("../models/user");
-const Order = require("../models/order");
+
 const auth = require("../middleware/auth");
+const rateLimit = require("../middleware/rateLimit");
 
-/* =========================
-   REGISTER USER
-========================= */
-router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
+const email = require("../services/email");
 
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
+const { HttpError, signIn, signOut, text, EMAIL } = require("../utils/http");
 
-  const passwordPattern =
-    /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/;
+// at least 8 characters, with a number and a symbol
+const PASSWORD_RULE = /^(?=.*\d)(?=.*[^A-Za-z0-9\s]).{8,128}$/;
+const PASSWORD_MESSAGE = "Password must be at least 8 characters and include a number and a special character.";
 
-  if (!passwordPattern.test(password)) {
-    return res.status(400).json({
-      message:
-        "Password must be at least 8 characters and include a number and special character"
-    });
-  }
-
-  try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already in use" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    await User.create({
-      name,
-      email,
-      password: hashedPassword
-    });
-
-    res.status(201).json({ message: "Signup successful" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
+const loginLimit = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    message: "Too many attempts. Please wait 15 minutes and try again."
 });
 
-/* =========================
-   LOGIN USER (JWT)
-========================= */
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    res.json({
-      message: "Login successful",
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email
-      }
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
+const signupLimit = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 10,
+    message: "Too many sign-ups from this connection. Please try again later."
 });
 
-/* =========================
-   GET CURRENT USER
-========================= */
-router.get("/me", auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select("name email");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+const publicUser = (user) => ({ id: user._id, name: user.name, email: user.email, profileImage: user.profileImage || "" });
+
+/* POST /api/users/register  { name, email, password } — also signs the new customer in */
+router.post("/register", signupLimit, async (req, res) => {
+
+    const name = text(req.body.name, 80);
+    const userEmail = text(req.body.email, 120).toLowerCase();
+    const password = String(req.body.password || "");
+
+    const errors = {};
+
+    if (!name) errors.name = "Please enter your name.";
+    if (!EMAIL.test(userEmail)) errors.email = "Please enter a valid email address.";
+    if (!PASSWORD_RULE.test(password)) errors.password = PASSWORD_MESSAGE;
+
+    if (Object.keys(errors).length) {
+        throw new HttpError(400, Object.values(errors)[0], { errors });
     }
-    res.json(user);
-  } catch {
-    res.status(500).json({ message: "Server error" });
-  }
+
+    if (await User.exists({ email: userEmail })) {
+        throw new HttpError(400, "That email already has an account. Please log in instead.", { errors: { email: "That email already has an account." } });
+    }
+
+    let user;
+
+    try {
+        user = await User.create({ name, email: userEmail, password: await bcrypt.hash(password, 10) });
+    } catch (err) {
+        if (err.code === 11000) throw new HttpError(400, "That email already has an account. Please log in instead.");
+        throw err;
+    }
+
+    signIn(res, "user", { id: user._id });
+
+    email.welcome(user);
+
+    res.status(201).json({ success: true, message: "Account created.", user: publicUser(user) });
+
 });
 
-/* =========================
-   UPDATE PROFILE
-========================= */
+/* POST /api/users/login  { email, password } */
+router.post("/login", loginLimit, async (req, res) => {
+
+    const userEmail = text(req.body.email, 120).toLowerCase();
+    const password = String(req.body.password || "");
+
+    if (!userEmail || !password) throw new HttpError(400, "Email and password are required.");
+
+    const user = await User.findOne({ email: userEmail });
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+        throw new HttpError(400, "Incorrect email or password.");
+    }
+
+    signIn(res, "user", { id: user._id });
+
+    res.json({ success: true, message: "Login successful", user: publicUser(user) });
+
+});
+
+/* POST /api/users/logout */
+router.post("/logout", (req, res) => {
+
+    signOut(res, "user");
+
+    res.json({ success: true });
+
+});
+
+/* GET /api/users/me */
+router.get("/me", auth, (req, res) => {
+
+    res.json({ success: true, user: publicUser(req.user) });
+
+});
+
+/* PUT /api/users/profile  { name } */
 router.put("/profile", auth, async (req, res) => {
-  const { name } = req.body;
 
-  if (!name) {
-    return res.status(400).json({ message: "Name is required" });
-  }
+    const name = text(req.body.name, 80);
 
-  try {
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      { name },
-      { new: true }
-    ).select("name email");
+    if (!name) throw new HttpError(400, "Name is required.");
 
-    res.json(user);
-  } catch {
-    res.status(500).json({ message: "Server error" });
-  }
+    req.user.name = name;
+
+    await req.user.save();
+
+    res.json({ success: true, user: publicUser(req.user) });
+
 });
 
-/* =========================
-   ORDER HISTORY
-========================= */
-router.get("/orders", auth, async (req, res) => {
-  try {
-    const orders = await Order.find({ user: req.user.id })
-      .sort({ createdAt: -1 });
+/* PUT /api/users/password  { currentPassword, newPassword } */
+router.put("/password", auth, loginLimit, async (req, res) => {
 
-    res.json(orders);
-  } catch {
-    res.status(500).json({ message: "Server error" });
-  }
+    const currentPassword = String(req.body.currentPassword || "");
+    const newPassword = String(req.body.newPassword || "");
+
+    const user = await User.findById(req.user._id);
+
+    if (!(await bcrypt.compare(currentPassword, user.password))) {
+        throw new HttpError(400, "Your current password is incorrect.", { errors: { currentPassword: "Incorrect password." } });
+    }
+
+    if (!PASSWORD_RULE.test(newPassword)) {
+        throw new HttpError(400, PASSWORD_MESSAGE, { errors: { newPassword: PASSWORD_MESSAGE } });
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+
+    await user.save();
+
+    res.json({ success: true, message: "Password changed." });
+
 });
 
 module.exports = router;

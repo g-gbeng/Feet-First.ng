@@ -1,243 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Feet-First.ng — Profile</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>Profile | Feet-First.ng</title>
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/pages/profile.css">
 
-<style>
-:root {
-  --primary: #111111;
-  --accent: #d4af37;
-  --bg: #f4f4f4;
-  --card-bg: #ffffff;
-  --text-main: #222222;
-  --text-muted: #6b6b7a;
-}
-
-body {
-  font-family: "Poppins", sans-serif;
-  background: var(--bg);
-  color: var(--text-main);
-  margin: 0;
-
-  opacity: 0;
-  transition: opacity .6s ease;
-}
-
-
-/* ===============================
-   TOP BAR
-================================ */
-.top-bar {
-  position: fixed;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 32px);
-  max-width: 1100px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 1000;
-}
-
-.top-bar strong {
-  font-weight: 600;
-}
-
-.avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: var(--primary);
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-}
-
-/* ===============================
-   MAIN LAYOUT
-================================ */
-.container-main {
-  max-width: 1100px;
-  margin: 110px auto 40px;
-  padding: 16px;
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 20px;
-}
-
-.card-glass {
-  background: var(--card-bg);
-  border-radius: 16px;
-  padding: 22px;
-  box-shadow: 0 10px 25px rgba(0,0,0,.05);
-}
-
-/* ===============================
-   LEFT PROFILE CARD
-================================ */
-.profile-pic-lg {
-  width: 110px;
-  height: 110px;
-  border-radius: 16px;
-  background: var(--primary);
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 42px;
-  font-weight: 700;
-}
-
-.profile-name {
-  margin-top: 14px;
-  font-weight: 600;
-}
-
-.profile-email {
-  font-size: .85rem;
-  color: var(--text-muted);
-}
-
-.logout-btn {
-  margin-top: 20px;
-}
-
-/* ===============================
-   FORM
-================================ */
-.section-title {
-  font-weight: 600;
-  margin-bottom: 18px;
-}
-
-label {
-  font-size: .8rem;
-  margin-top: 14px;
-  color: var(--text-muted);
-}
-
-.form-control {
-  border-radius: 10px;
-}
-
-/* ===============================
-   RESPONSIVE
-================================ */
-@media (max-width: 900px) {
-  .container-main {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
+<script src="js/common.js" defer></script>
+<script src="js/shop.js" defer></script>
+<script src="js/pages/profile.js" defer></script>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
-<div class="top-bar">
-  <strong>My Profile</strong>
-  <div id="topAvatar" class="avatar">U</div>
-</div>
+<div id="shell"></div>
 
-<main class="container-main">
+<main class="profileLayout">
 
-  <!-- LEFT -->
-  <aside class="card-glass text-center">
-    <div id="profileAvatar" class="profile-pic-lg mx-auto">U</div>
+    <aside class="card-box text-center">
+        <div id="profileAvatar" class="profilePic">U</div>
+        <div id="displayName" class="profileName"></div>
+        <div id="displayEmail" class="profileEmail"></div>
+        <a href="orders.html" class="btn btn-gold btn-sm w-100 mt-4">My Orders</a>
+        <button type="button" id="profileLogout" class="btn btn-outline-danger btn-sm w-100 mt-2">Log out</button>
+    </aside>
 
-    <div id="displayName" class="profile-name">User</div>
-    <div id="displayEmail" class="profile-email">email@example.com</div>
+    <div class="stack">
 
-    <button id="logoutBtn" class="btn btn-outline-danger btn-sm w-100 logout-btn">
-      Logout
-    </button>
-  </aside>
+        <form class="card-box" id="profileForm" novalidate>
+            <h2>Personal information</h2>
+            <p class="formNotice ok" id="profileNotice" hidden></p>
+            <div class="field mb-3">
+                <label class="form-label" for="fullName">Full name</label>
+                <input id="fullName" class="form-control" autocomplete="name" maxlength="80" required>
+                <small class="fieldError" id="fullNameError"></small>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="email">Email</label>
+                <input id="email" class="form-control" disabled>
+                <small class="formHint">Your email can't be changed here.</small>
+            </div>
+            <button type="submit" class="btn btn-gold" id="saveProfileBtn">Save changes</button>
+        </form>
 
-  <!-- RIGHT -->
-  <section class="card-glass">
-    <div class="section-title">Personal Information</div>
+        <form class="card-box" id="passwordForm" novalidate>
+            <h2>Change password</h2>
+            <p class="formNotice" id="passwordNotice" hidden></p>
+            <div class="field mb-3">
+                <label class="form-label" for="currentPassword">Current password</label>
+                <div class="passwordWrap">
+                    <input type="password" id="currentPassword" class="form-control" autocomplete="current-password" required>
+                    <button type="button" class="togglePassword" data-for="currentPassword"></button>
+                </div>
+                <small class="fieldError" id="currentPasswordError"></small>
+            </div>
+            <div class="field mb-3">
+                <label class="form-label" for="newPassword">New password</label>
+                <div class="passwordWrap">
+                    <input type="password" id="newPassword" class="form-control" autocomplete="new-password" required aria-describedby="newPasswordHint">
+                    <button type="button" class="togglePassword" data-for="newPassword"></button>
+                </div>
+                <small class="formHint" id="newPasswordHint">At least 8 characters, with a number and a symbol.</small>
+                <small class="fieldError" id="newPasswordError"></small>
+            </div>
+            <button type="submit" class="btn btn-dark" id="savePasswordBtn">Change password</button>
+        </form>
 
-    <label>Full Name</label>
-    <input id="fullName" class="form-control" disabled />
-
-    <label>Email</label>
-    <input id="email" class="form-control" disabled />
-
-    <div id="msg" class="small mt-3"></div>
-  </section>
+    </div>
 
 </main>
-
-<script>
-/* ===============================
-   AUTH CHECK
-================================ */
-const token = localStorage.getItem("token");
-
-if (!token) {
-  window.location.href = "/login.html";
-}
-
-/* ===============================
-   HELPERS
-================================ */
-function initials(name) {
-  if (!name) return "U";
-  return name.split(" ").map(n => n[0]).join("").toUpperCase();
-}
-
-/* ===============================
-   LOAD USER
-================================ */
-async function loadProfile() {
-  try {
-    const res = await fetch("/api/users/me", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    if (!res.ok) {
-      localStorage.clear();
-      window.location.href = "/login.html";
-      return;
-    }
-
-    const user = await res.json();
-
-    displayName.textContent = user.name;
-    displayEmail.textContent = user.email;
-    fullName.value = user.name;
-    email.value = user.email;
-
-    profileAvatar.textContent = initials(user.name);
-    topAvatar.textContent = initials(user.name);
-    document.body.style.opacity = "1";
-
-  } 
-  catch (err) {
-  console.error(err);
-  window.location.href = "/login.html";
-}
-}
-
-loadProfile();
-
-/* ===============================
-   LOGOUT
-================================ */
-logoutBtn.onclick = () => {
-  localStorage.clear();
-  window.location.href = "/login.html";
-};
-
-</script>
 
 </body>
 </html>

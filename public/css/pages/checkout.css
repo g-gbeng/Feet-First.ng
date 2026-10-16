@@ -1,0 +1,94 @@
+/* =========================================
+   CHECKOUT
+========================================= */
+
+.checkoutPage {
+    max-width: 1040px;
+    padding-top: 36px;
+    padding-bottom: 40px;
+}
+
+.checkoutLayout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 28px;
+    align-items: start;
+}
+
+.detailsBox,
+.summaryBox {
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+}
+
+.detailsBox h2,
+.summaryBox h2 {
+    margin-bottom: 18px;
+    font-size: 1.15rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 .2rem rgba(212, 175, 55, .2);
+}
+
+.summaryBox {
+    position: sticky;
+    top: 90px;
+}
+
+.summaryItem {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: .95rem;
+}
+
+.summaryItem img {
+    width: 56px;
+    height: 46px;
+    border-radius: 8px;
+    background: #fafafa;
+    object-fit: contain;
+}
+
+.summaryItem small {
+    display: block;
+    color: var(--muted);
+}
+
+.totalRow {
+    display: flex;
+    justify-content: space-between;
+    margin: 16px 0 18px;
+    font-size: 1.2rem;
+}
+
+.totalRow strong {
+    color: var(--gold-dark);
+}
+
+.secureNote {
+    margin: 12px 0 4px;
+    color: var(--muted);
+    font-size: .88rem;
+    text-align: center;
+}
+
+@media (max-width: 860px) {
+
+    .checkoutLayout {
+        grid-template-columns: 1fr;
+    }
+
+    .summaryBox {
+        position: static;
+    }
+
+}

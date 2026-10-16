@@ -1,170 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin Login – Feet-First.ng</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
 
-  <!-- Bootstrap -->
-  <link
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
+<title>Admin Login | Feet-First.ng</title>
 
-  <style>
-    :root {
-      --gold: #d4af37;
-    }
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/pages/admin-login.css">
 
-    body {
-      background: #f8f9fa;
-      font-family: "Segoe UI", sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .login-card {
-      width: 100%;
-      max-width: 420px;
-      border-radius: 0.75rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      background: #fff;
-      padding: 2rem;
-    }
-
-    .login-card h3 {
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .login-card p {
-      text-align: center;
-      color: #6c757d;
-      margin-bottom: 2rem;
-    }
-
-    .btn-gold {
-      background: var(--gold);
-      color: #fff;
-      border: none;
-      font-weight: 600;
-    }
-
-    .btn-gold:hover {
-      background: #b8962e;
-    }
-
-    .form-control {
-      height: 45px;
-    }
-
-    .error-text {
-      color: #dc3545;
-      font-size: 0.9rem;
-      text-align: center;
-      margin-top: 1rem;
-      display: none;
-    }
-
-    @media (max-width: 576px) {
-      .login-card {
-        padding: 1.5rem;
-      }
-    }
-  </style>
+<script src="js/common.js" defer></script>
+<script src="js/pages/admin-login.js" defer></script>
 </head>
 
 <body>
 
-  <div class="login-card">
-    <h3>Admin Login</h3>
-    <p>Feet-First.ng Management Panel</p>
+<main class="loginCard">
 
-    <form id="adminLoginForm">
-      <div class="form-group">
-        <label>Email</label>
-        <input
-          type="email"
-          class="form-control"
-          id="email"
-          required
-          placeholder="Enter admin email"
-        />
-      </div>
+    <h1>Admin Login</h1>
+    <p class="sub">Feet-First.ng Management Panel</p>
 
-      <div class="form-group">
-        <label>Password</label>
-        <input
-          type="password"
-          class="form-control"
-          id="password"
-          required
-          placeholder="Enter password"
-        />
-      </div>
+    <form id="adminLoginForm" novalidate>
 
-      <button type="submit" class="btn btn-gold btn-block mt-4">
-        Log In
-      </button>
+        <p class="formNotice" id="errorMsg" role="alert" hidden></p>
 
-      <div class="error-text" id="errorMsg">
-        Invalid admin credentials
-      </div>
+        <div class="mb-3">
+            <label class="form-label" for="email">Email</label>
+            <input type="email" class="form-control" id="email" autocomplete="username" placeholder="Enter admin email" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="password">Password</label>
+            <div class="passwordWrap">
+                <input type="password" class="form-control" id="password" autocomplete="current-password" placeholder="Enter password" required>
+                <button type="button" class="togglePassword" data-for="password"></button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-gold w-100 mt-3" id="loginBtn">Log in</button>
+
     </form>
-  </div>
 
-<script>
-  const form = document.getElementById("adminLoginForm");
-  const errorMsg = document.getElementById("errorMsg");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    errorMsg.style.display = "none";
-
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    try {
-      const res = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-
-console.log("Status:", res.status);
-
-const data = await res.json();
-
-console.log("Response:", data);
-
-      
-
-      if (!res.ok) {
-        errorMsg.style.display = "block";
-        errorMsg.textContent = data.message || "Login failed";
-        return;
-      }
-
-      // Store admin token
-      localStorage.setItem("adminToken", data.token);
-
-      // Redirect to admin dashboard
-      window.location.href = "/admin.html";
-
-    } 
-    
-    catch (err) {
-  console.error("LOGIN FETCH ERROR:", err);
-
-  errorMsg.style.display = "block";
-  errorMsg.textContent = err.message;
-}
-  });
-</script>
+</main>
 
 </body>
 </html>

@@ -1,0 +1,170 @@
+/* =========================================
+   DASHBOARD (shop home)
+========================================= */
+
+/* the photo sits on its own fixed layer: smoother than background-attachment: fixed */
+body {
+    position: relative;
+    min-height: 100vh;
+    background: #111;
+    color: #fff;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(rgba(0, 0, 0, .55), rgba(0, 0, 0, .7)), url("../../images/IMG_9582.JPG") center / cover no-repeat;
+}
+
+.dashboard {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 10px 16px 30px;
+}
+
+.intro {
+    margin: 10px 0 30px;
+    animation: rise .7s ease both;
+}
+
+.intro .welcome {
+    margin: 0 0 6px;
+    color: var(--gold);
+    font-weight: 600;
+}
+
+.intro h1 {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+}
+
+.intro .lead {
+    margin: 6px 0 0;
+    color: #ddd;
+}
+
+.brandGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+.brandTile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 170px;
+    padding: 20px;
+    overflow: hidden;
+    border-radius: var(--radius);
+    color: #fff;
+    text-decoration: none;
+    animation: rise .6s ease both;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.brandTile:hover,
+.brandTile:focus-visible {
+    color: #fff;
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, .35);
+}
+
+.brandTile h2 {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.brandTile p {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-size: .92rem;
+    opacity: .9;
+}
+
+.brandTile .photo {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    width: 46%;
+    aspect-ratio: 1;
+    padding: 6px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .18);
+    overflow: hidden;
+}
+
+.brandTile .photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform .3s ease;
+}
+
+.brandTile:hover .photo img {
+    transform: rotate(-6deg) scale(1.06);
+}
+
+.brandTile h2,
+.brandTile p {
+    max-width: 50%;
+}
+
+.brandTile.red { background: #c62828; }
+.brandTile.light { background: #f5f5f5; color: #111; }
+.brandTile.light:hover, .brandTile.light:focus-visible { color: #111; }
+.brandTile.gold { background: #d39e00; }
+.brandTile.grey { background: #5f6368; }
+.brandTile.dark { background: #2b2b2b; }
+
+.quickLinks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-top: 34px;
+}
+
+.quick {
+    display: block;
+    padding: 18px 20px;
+    border: 1px solid rgba(255, 255, 255, .18);
+    border-radius: var(--radius);
+    background: rgba(0, 0, 0, .45);
+    color: #fff;
+    text-decoration: none;
+    transition: border-color .2s, background .2s;
+}
+
+.quick:hover {
+    border-color: var(--gold);
+    background: rgba(0, 0, 0, .6);
+    color: #fff;
+}
+
+.quick strong {
+    display: block;
+    color: var(--gold);
+}
+
+.quick span {
+    color: #ccc;
+    font-size: .92rem;
+}
+
+.siteFooter.dark {
+    color: #bbb;
+}
+
+@keyframes rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+}

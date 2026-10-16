@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 
 const mongoose = require("mongoose");
 const connectDB = require("./config/db");
@@ -957,28 +957,67 @@ const products = [
 
 ];
 
+/*
+  Adds the products above, or updates them if they're already in the shop
+  (matched by name, variant and brand; when the list has the same product twice,
+  the entries are matched in order). Existing products keep their IDs, so carts,
+  saved items and orders that point to them keep working. Products removed from
+  this list are left alone: mark them out of stock in the database instead.
+*/
 async function seedProducts() {
+
     try {
 
         await connectDB();
 
-        // Remove existing products
-        await Product.deleteMany({});
+        const groups = new Map();
 
-        // Insert fresh products
-        await Product.insertMany(products);
+        for (const product of products) {
+            const key = JSON.stringify([product.name, product.variant || "", product.brand]);
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(product);
+        }
 
-        console.log(`✅ ${products.length} products inserted successfully.`);
+        let added = 0;
+        let updated = 0;
 
-        process.exit();
+        for (const list of groups.values()) {
+
+            const { name, variant, brand } = list[0];
+
+            const existing = await Product.find({ name, variant, brand }).sort({ _id: 1 });
+
+            for (let i = 0; i < list.length; i++) {
+
+                if (existing[i]) {
+                    existing[i].set(list[i]);
+                    if (existing[i].isModified()) {
+                        await existing[i].save();
+                        updated++;
+                    }
+                } else {
+                    await Product.create(list[i]);
+                    added++;
+                }
+
+            }
+
+        }
+
+        console.log(`Products: ${added} added, ${updated} updated, ${products.length - added - updated} unchanged.`);
 
     } catch (err) {
 
-        console.error("❌ Error seeding products:", err);
+        console.error("Error seeding products:", err);
 
-        process.exit(1);
+        process.exitCode = 1;
+
+    } finally {
+
+        await mongoose.disconnect();
 
     }
+
 }
 
 seedProducts();

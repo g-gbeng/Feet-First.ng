@@ -1,349 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>User Dashboard | Feet-First.ng</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Bootstrap -->
-  <link
-    rel="stylesheet"
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-  />
+<title>Shop | Feet-First.ng</title>
 
-  <!-- Icons -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-  />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/pages/dashboard.css">
 
-  <style>
-    body {
-      background-image: url("images/IMG_9582.JPG");
-      background-size: cover;
-      background-attachment: fixed;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* Fade-in animation */
-    .fade-in {
-      animation: fadeIn 0.8s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Header */
-    .dashboard-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-      color: #fff;
-    }
-
-    /* Profile avatar */
-    .avatar {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background: #343a40;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      cursor: pointer;
-      overflow: hidden;
-    }
-
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: -280px;
-      width: 280px;
-      height: 100%;
-      background: #111;
-      color: #fff;
-      transition: 0.3s ease;
-      z-index: 1000;
-      padding: 20px;
-    }
-
-    .sidebar.active {
-      left: 0;
-    }
-
-    .sidebar-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 30px;
-    }
-
-    .sidebar-header .avatar {
-      margin-right: 10px;
-    }
-
-    .sidebar a {
-      color: #fff;
-      display: block;
-      padding: 12px 0;
-      text-decoration: none;
-    }
-
-    .sidebar a:hover {
-      color: #f8c146;
-    }
-
-    .menu-btn {
-      font-size: 22px;
-      cursor: pointer;
-      color: #fff;
-    }
-
-    /* Product cards */
-    .shoe {
-      height: 150px;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-      transition: transform 0.2s ease;
-    }
-
-    .shoe:hover {
-      transform: translateY(-4px);
-    }
-
-    footer {
-      color: #fff;
-    }
-    /* Overlay */
-#overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 999;
-  display: none;
-}
-
-/* Close button */
-.sidebar-close {
-  font-size: 22px;
-  cursor: pointer;
-  margin-left: auto;
-}
-
-  </style>
+<script src="js/common.js" defer></script>
+<script src="js/shop.js" defer></script>
+<script src="js/pages/dashboard.js" defer></script>
 </head>
 
 <body>
 
-  <!-- Sidebar -->
+<div id="shell"></div>
 
-<div id="overlay"></div>
+<main class="dashboard">
 
-  <div class="sidebar" id="sidebar">
-  <div class="sidebar-header">
-    <div class="avatar" id="sidebarAvatar"></div>
-    <div class="flex-grow-1">
-      <strong id="sidebarName"></strong>
-    </div>
-    <span class="sidebar-close" onclick="closeSidebar()">✕</span>
-  </div>
+    <section class="intro">
+        <p class="welcome" id="welcomeText">&nbsp;</p>
+        <h1>Feet-First.ng</h1>
+        <p class="lead">An overview of our currently available products</p>
+    </section>
 
-  <a href="profile.html"><i class="fa fa-user"></i> Profile</a>
-  <a href="cart.html"><i class="fa fa-shopping-cart"></i> Cart</a>
-  <a href="favorites.html"><i class="fa fa-heart"></i> Favorites</a>
-  <a href="checkout.html"><i class="fa fa-credit-card"></i> Checkout</a>
-  <a href="#" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Logout</a>
-  
-</div>
+    <section aria-label="Brands">
+        <div class="brandGrid" id="brandGrid"></div>
+    </section>
 
+    <section class="quickLinks" aria-label="Your account">
+        <a href="orders.html" class="quick">
+            <strong>My Orders</strong>
+            <span>Track deliveries and pay for unpaid orders</span>
+        </a>
+        <a href="favorites.html" class="quick">
+            <strong>Saved Items</strong>
+            <span>The pairs you've saved for later</span>
+        </a>
+        <a href="profile.html" class="quick">
+            <strong>Profile</strong>
+            <span>Your name and password</span>
+        </a>
+    </section>
 
-  <!-- Header -->
-  <div class="dashboard-header fade-in">
-    <span class="menu-btn" onclick="toggleSidebar()">
-      <i class="fa fa-bars"></i>
-    </span>
+</main>
 
-    <h6 id="welcomeText"></h6>
-
-    <div class="avatar" onclick="goToProfile()" id="topAvatar"></div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="container text-white fade-in">
-    <h1>Feet-first.ng</h1>
-    <h4>An overview of our currently available products</h4>
-
-    <div class="row mt-4">
-
-      <!-- Product cards (unchanged structure) -->
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="shoe bg-danger">
-          <a href="nikeairforce-section.html" class="text-white">
-            <h4>Nike Air Force</h4>
-            <p>Size: 41–45</p>
-            <p>Multiple categories</p>
-          </a>
-        </div>
-      </div>
-
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="shoe bg-light text-dark">
-          <a href="adidas-section.html" class="text-dark">
-            <h4>Adidas</h4>
-            <p>Size: 41–45</p>
-            <p>Multiple categories</p>
-          </a>
-        </div>
-      </div>
-
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="shoe bg-warning text-white">
-          <a href="puma-section.html" class="text-white">
-            <h4>Puma</h4>
-            <p>Size: 41–45</p>
-            <p>Multiple categories</p>
-          </a>
-        </div>
-      </div>
-
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="shoe bg-secondary text-white">
-          <a href="newbalance-section.html" class="text-white">
-            <h4>New Balance</h4>
-            <p>Size: 41–45</p>
-            <p>Multiple categories</p>
-          </a>
-        </div>
-      </div>
-
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="shoe bg-secondary">
-          <a href="dunk-section.html" class="text-white">
-            <h4>Nike Dunks</h4>
-            <p>Size: 41–45</p>
-            <p>Multiple categories</p>
-          </a>
-        </div>
-      </div>
-
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="shoe bg-light text-dark">
-          <a href="vans-section.html" class="text-dark">
-            <h4>Vans</h4>
-            <p>Size:41–45</p>
-            <p>Multiple categories</p>
-          </a>
-        </div>
-      </div>
-
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="shoe bg-danger text-white">
-          <a href="airmax-section.html" class="text-white">
-            <h4>Nike Air Max's</h4>
-            <p>Size: 43–45</p>
-            <p>Multiple categories</p>
-          </a>
-        </div>
-      </div>
-
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="shoe bg-warning text-white">
-          <a href="jordan-section.html" class="text-white">
-            <h4>Air Jordans</h4>
-            <p>Size: 43–45</p>
-            <p>Multiple categories</p>
-          </a>
-        </div>
-      </div>
-
-      
-
-    </div>
-
-    <footer class="text-center mt-5">
-      <p>&copy; Feet-First.ng</p>
-    </footer>
-  </div>
-
-  <!-- Scripts -->
-  <script>
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if (!user) {
-      window.location.href = "login.html";
-    }
-
-    const initials = user.name
-      .split(" ")
-      .map(n => n[0])
-      .join("")
-      .toUpperCase();
-
-    document.getElementById("welcomeText").textContent =
-      `Welcome, ${user.name}`;
-
-    function setAvatar(el) {
-      if (user.profileImage) {
-        el.innerHTML = `<img src="${user.profileImage}" />`;
-      } else {
-        el.textContent = initials;
-      }
-    }
-
-    setAvatar(document.getElementById("topAvatar"));
-    setAvatar(document.getElementById("sidebarAvatar"));
-
-    document.getElementById("sidebarName").textContent = user.name;
-
-    function toggleSidebar() {
-      document.getElementById("sidebar").classList.toggle("active");
-    }
-
-    function goToProfile() {
-      window.location.href = "profile.html";
-    }
-
-    function logout() {
-      localStorage.removeItem("user");
-      window.location.href = "login.html";
-    }
-    
-const sidebar = document.getElementById("sidebar");
-const overlay = document.getElementById("overlay");
-
-function toggleSidebar() {
-  sidebar.classList.add("active");
-  overlay.style.display = "block";
-}
-
-function closeSidebar() {
-  sidebar.classList.remove("active");
-  overlay.style.display = "none";
-}
-
-overlay.addEventListener("click", closeSidebar);
-
-
-  </script>
+<footer class="siteFooter dark">
+    © Feet-First.ng · <a href="privacy-policy.html">Privacy</a> · <a href="terms-of-service.html">Terms</a>
+</footer>
 
 </body>
 </html>

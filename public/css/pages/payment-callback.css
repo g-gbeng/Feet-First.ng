@@ -1,0 +1,73 @@
+/* =========================================
+   PAYMENT RESULT
+========================================= */
+
+.paymentCard {
+    max-width: 520px;
+    margin: 50px auto;
+    padding: 36px 28px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    text-align: center;
+}
+
+.paymentCard h1 {
+    margin: 18px 0 10px;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.paymentCard p {
+    color: var(--muted);
+}
+
+.statusIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.statusIcon.checking { background: #f4f4f6; }
+.statusIcon.success { background: #e8f6ec; color: var(--success); }
+.statusIcon.pending { background: #fff4e5; color: #a15c00; }
+.statusIcon.failed { background: #fdecec; color: var(--danger); }
+
+.orderFacts {
+    display: flex;
+    justify-content: center;
+    gap: 34px;
+    margin: 20px 0;
+}
+
+.orderFacts dt {
+    color: var(--muted);
+    font-size: .85rem;
+    font-weight: 400;
+}
+
+.orderFacts dd {
+    margin: 0;
+    font-weight: 700;
+    word-break: break-all;
+}
+
+.testNote {
+    padding: 10px;
+    border-radius: 10px;
+    background: #eef2ff;
+    color: #3949ab !important;
+    font-size: .92rem;
+}
+
+.paymentCard .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 22px;
+}

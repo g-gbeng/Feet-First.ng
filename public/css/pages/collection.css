@@ -1,0 +1,139 @@
+/* =========================================
+   BRAND COLLECTION PAGES
+   (adidas-section.html, puma-section.html, ...)
+========================================= */
+
+.collection {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 36px 16px 20px;
+}
+
+.collection .pageHead {
+    justify-content: center;
+    text-align: center;
+}
+
+.productGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 22px;
+}
+
+.productCard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.productCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(212, 175, 55, .22);
+}
+
+.productCard .photo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 3;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    background: #fafafa;
+}
+
+.productCard .photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.productCard h2 {
+    margin: 0 44px 4px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.productCard .price {
+    margin-bottom: 12px;
+}
+
+.productCard .buy {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.productCard .buy .form-select {
+    flex: 0 0 96px;
+}
+
+.productCard .buy .btn {
+    flex: 1;
+}
+
+.saveBtn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: #fff;
+    color: #555;
+    cursor: pointer;
+    transition: color .2s, border-color .2s;
+}
+
+.saveBtn:hover {
+    border-color: var(--gold);
+    color: var(--gold-dark);
+}
+
+.saveBtn[aria-pressed="true"],
+.saveBtn[aria-pressed="true"]:hover {
+    border-color: #e5484d;
+    color: #e5484d;
+}
+
+.saveBtn[aria-pressed="true"] .icon {
+    fill: currentColor;
+}
+
+.productCard.soldOut .photo img {
+    opacity: .5;
+}
+
+.soldOutLabel {
+    margin-top: auto;
+    color: var(--danger);
+    font-weight: 700;
+}
+
+/* skeleton while loading */
+.productCard.skeleton {
+    min-height: 330px;
+    background: linear-gradient(100deg, #f6f6f6 40%, #fbfbfb 50%, #f6f6f6 60%) 0 0 / 200% 100%;
+    animation: shimmer 1.4s linear infinite;
+}
+
+@keyframes shimmer {
+    to { background-position: -200% 0; }
+}
+
+@media (max-width: 575px) {
+
+    .productGrid {
+        grid-template-columns: 1fr;
+    }
+
+}

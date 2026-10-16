@@ -1,0 +1,320 @@
+/* =========================================
+   ADMIN DASHBOARD
+========================================= */
+
+body {
+    background: #f8f8f8;
+}
+
+.adminPage {
+    padding-top: 28px;
+    padding-bottom: 40px;
+}
+
+.adminHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 26px;
+}
+
+.adminHeader h1 {
+    margin: 0;
+    font-size: 1.9rem;
+    font-weight: 700;
+}
+
+.adminHeader p {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+/* ---------- stats ---------- */
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+.statCard {
+    padding: 20px 22px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .05);
+}
+
+.statCard.highlight {
+    outline: 2px solid var(--gold);
+}
+
+.statTitle {
+    color: #888;
+    font-size: .9rem;
+}
+
+.statValue {
+    color: var(--gold-dark);
+    font-size: 1.85rem;
+    font-weight: 700;
+    word-break: break-all;
+}
+
+/* ---------- sections ---------- */
+
+.sectionCard {
+    margin-top: 24px;
+    padding: 24px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .05);
+}
+
+.sectionCard h2 {
+    margin: 0 0 16px;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.sectionHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.sectionHead h2 {
+    margin: 0;
+}
+
+.sectionHead .form-control {
+    max-width: 360px;
+    border-radius: 10px;
+}
+
+.form-control:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 .2rem rgba(212, 175, 55, .2);
+}
+
+/* ---------- order tabs ---------- */
+
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.tab {
+    padding: 8px 16px;
+    border: 1px solid var(--line);
+    border-radius: 30px;
+    background: #fff;
+    font-weight: 600;
+}
+
+.tab[aria-selected="true"] {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: #fff;
+}
+
+.tabCount {
+    display: inline-block;
+    min-width: 22px;
+    margin-left: 4px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, .08);
+    font-size: 12px;
+}
+
+.tab[aria-selected="true"] .tabCount {
+    background: var(--gold);
+}
+
+.groupHint {
+    margin: 4px 0 14px;
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+/* ---------- order cards ---------- */
+
+.orderGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 16px;
+}
+
+.orderCard {
+    display: flex;
+    flex-direction: column;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+}
+
+.orderCard.isNew {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, .25);
+}
+
+.orderTop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.orderId {
+    font-weight: 700;
+    word-break: break-all;
+}
+
+.orderMeta {
+    margin: 4px 0 10px;
+    color: var(--muted);
+    font-size: .82rem;
+}
+
+.badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.customer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 14px;
+    margin-bottom: 10px;
+    font-size: .9rem;
+}
+
+.customer div {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.customer strong {
+    display: block;
+    color: #888;
+    font-size: .78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.customer .wide {
+    grid-column: 1 / -1;
+}
+
+.orderItems {
+    margin: 0 0 10px;
+    padding: 0;
+    list-style: none;
+    font-size: .92rem;
+}
+
+.orderItems li {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 5px 0;
+    border-top: 1px dashed var(--line);
+}
+
+.riderLine {
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #eef4ff;
+    font-size: .88rem;
+}
+
+.orderBottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+}
+
+.orderTotal {
+    color: var(--gold-dark);
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.orderActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.orderActions .btn {
+    padding: 4px 12px;
+    font-size: .88rem;
+}
+
+/* ---------- customers table ---------- */
+
+.usersTableWrap {
+    max-height: 460px;
+    overflow-y: auto;
+}
+
+.usersTableWrap thead th {
+    position: sticky;
+    top: 0;
+    background: #111;
+    color: #fff;
+    font-weight: 600;
+}
+
+.usersTableWrap td {
+    font-size: .92rem;
+    overflow-wrap: anywhere;
+}
+
+.orderCount {
+    display: inline-block;
+    min-width: 28px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--gold-soft);
+    color: var(--gold-dark);
+    font-weight: 700;
+}
+
+.adminTag {
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: #111;
+    color: #fff;
+    font-size: 11px;
+}
+
+@media (max-width: 420px) {
+
+    .orderGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .customer {
+        grid-template-columns: 1fr;
+    }
+
+}

@@ -1,33 +1,29 @@
-const jwt = require("jsonwebtoken");
+/*
+  Signed-in customer. Reads the sign-in cookie, loads the user and puts it on req.user.
+*/
+
 const User = require("../models/user");
 
-const auth = async (req, res, next) => {
-  try {
-    // 1. Check for token
-    const authHeader = req.headers.authorization;
+const { readSession, signOut } = require("../utils/http");
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "Not authorized" });
+async function auth(req, res, next) {
+
+    const session = readSession(req, "user");
+
+    const user = session && await User.findById(session.id).select("-password");
+
+    if (!user) {
+
+        if (session) signOut(res, "user");
+
+        return res.status(401).json({ success: false, message: "Please log in to continue." });
+
     }
 
-    // 2. Extract token
-    const token = authHeader.split(" ")[1];
-
-    // 3. Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // 4. Attach user to request
-    req.user = await User.findById(decoded.id).select("-password");
-
-    if (!req.user) {
-      return res.status(401).json({ message: "User not found" });
-    }
+    req.user = user;
 
     next();
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid token" });
-  }
-};
 
+}
 
 module.exports = auth;
