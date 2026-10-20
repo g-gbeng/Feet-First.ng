@@ -146,12 +146,12 @@ const products = [
     },
 
      {
-        name: "Adidas Superstar",
+        name: "Adidas NMD-G1",
         variant: "Adidas",
         brand: "Adidas",
         price: 105000,
         sizes: [41, 42, 43, 44, 45],
-        image: "/images/ADIDAS SUPERSTAR.avif",
+        image: "/images/Adidas NMD-G1.avif",
         inStock: true
     },
 
@@ -417,7 +417,7 @@ const products = [
     },
 
      {
-        name: "Vans LowLand Leather",
+        name: "Vans SLIP-ON",
         variant: "Vans",
         brand: "Vans",
         price: 68000,
@@ -433,62 +433,62 @@ const products = [
     // =========================
 
     {
-        name: "Nike SB Blazer",
+        name: "Nike Dunk High Retro",
         variant: "Nike",
         brand: "Dunk",
         price: 75000,
         sizes: [41, 42, 43, 44, 45],
-        image: "/images/SB BLAZER.png",
+        image: "/images/DUNK HIGH RETRO.png",
         inStock: true
     },
 
     {
-        name: "Nike SB Force",
+        name: "Nike Dunk Low Premium",
         variant: "Nike",
         brand: "Dunk",
         price: 78000,
         sizes: [41, 42, 43, 44, 45],
-        image: "/images/SB FORCE.png",
+        image: "/images/DUNK LOW PREMIUM.png",
         inStock: true
     },
 
     {
-        name: "Nike SB Pogo",
+        name: "Nike Dunk Low Retro SE",
         variant: "Nike",
         brand: "Dunk",
         price: 95000,
         sizes: [41, 42, 43, 44, 45],
-        image: "/images/SB POGO.png",
+        image: "/images/DUNK LOW RETRO SE.png",
         inStock: true
     },
 
     {
-        name: "Nike SB React",
+        name: "Nike Dunk Low Retro",
         variant: "Nike",
         brand: "Dunk",
         price: 115000,
         sizes: [41, 42, 43, 44, 45],
-        image: "/images/SB REACT.png",
+        image: "/images/DUNK LOW RETRO.png",
         inStock: true
     },
 
     {
-        name: "Nike SB Vertebrae",
+        name: "Nike Dunk Mid",
         variant: "Nike",
         brand: "Dunk",
         price: 100000,
         sizes: [41, 42, 43, 44, 45],
-        image: "/images/SB VERTEBRAE.png",
+        image: "/images/DUNK MID.png",
         inStock: true
     },
 
     {
-        name: "Nike SB Zoom",
+        name: "Nike Dunk Premium",
         variant: "Nike",
         brand: "Dunk",
         price: 110000,
         sizes: [41, 42, 43, 44, 45],
-        image: "/images/SB ZOOM.png",
+        image: "/images/DUNK PREMIUM.png",
         inStock: true
     },
 
