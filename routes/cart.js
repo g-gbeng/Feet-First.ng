@@ -65,11 +65,17 @@ async function cartView(cart) {
     let subtotal = 0;
     let count = 0;
 
+    // products removed from the shop leave the cart
+    const kept = cart.items.filter((item) => byId.has(String(item.productId)));
+
+    if (kept.length !== cart.items.length && !cart.isNew) {
+        cart.items = kept;
+        await cart.save();
+    }
+
     for (const item of cart.items) {
 
         const product = byId.get(String(item.productId));
-
-        if (!product) continue; // product removed from the shop
 
         const available = product.inStock && product.sizes.includes(item.size);
 

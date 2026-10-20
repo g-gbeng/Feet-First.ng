@@ -194,7 +194,7 @@ router.patch("/orders/:id/status", async (req, res) => {
 
     await order.save();
 
-    if (status !== previous || (status === "shipped" && req.body.resend)) {
+    if (status !== previous || (status === "shipped" && req.body.notifyAgain)) {
         if (status === "shipped") email.orderShipped(order);
         if (status === "completed") email.orderDelivered(order);
     }
@@ -243,7 +243,7 @@ router.post("/send-email", async (req, res) => {
     if (!to || !subject || !message) throw new HttpError(400, "Recipient, subject and message are all required.");
 
     if (!email.isConfigured()) {
-        throw new HttpError(503, "Email isn't set up yet: add RESEND_API_KEY to the server's settings.");
+        throw new HttpError(503, "Email isn't set up yet: add BREVO_API_KEY to the server's settings.");
     }
 
     let recipients;
@@ -265,7 +265,7 @@ router.post("/send-email", async (req, res) => {
     const result = await email.custom(recipients, subject, message);
 
     if (result.sent === 0) {
-        throw new HttpError(502, "The email couldn't be sent. Check the server log for the reason from Resend.");
+        throw new HttpError(502, "The email couldn't be sent. Check the server log for the reason from Brevo.");
     }
 
     res.json({

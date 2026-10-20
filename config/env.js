@@ -20,12 +20,13 @@ const env = {
     // Leave empty locally; it's worked out from each request.
     publicUrl: (process.env.PUBLIC_URL || "").replace(/\/$/, ""),
 
-    // Emails through Resend (https://resend.com). Without a key, emails are skipped.
-    // EMAIL_FROM must use a domain verified in Resend before customers can receive emails;
-    // onboarding@resend.dev only delivers to the Resend account's own address.
+    // Emails through Brevo's email API (https://www.brevo.com), over HTTPS, so it also
+    // works on hosts that block email ports (e.g. Render's free plan).
+    // Without a key, emails are skipped. EMAIL_FROM must be a sender verified in Brevo.
     email: {
-        resendKey: process.env.RESEND_API_KEY || "",
-        from: process.env.EMAIL_FROM || "FeetFirst <onboarding@resend.dev>"
+        brevoKey: process.env.BREVO_API_KEY || "",
+        brevoBase: (process.env.BREVO_API_BASE || "https://api.brevo.com").replace(/\/$/, ""),
+        from: process.env.EMAIL_FROM || "FeetFirst <no-reply@feetfirst.ng>"
     },
 
     // Paystack (https://dashboard.paystack.com > Settings > API Keys & Webhooks).
@@ -63,8 +64,8 @@ function checkEnv() {
 
     }
 
-    if (!env.email.resendKey) {
-        console.warn("Note: RESEND_API_KEY is not set, so emails (welcome, order updates, admin messages) are skipped.");
+    if (!env.email.brevoKey) {
+        console.warn("Note: BREVO_API_KEY is not set, so emails (welcome, order updates, admin messages) are skipped.");
     }
 
 }

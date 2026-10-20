@@ -339,7 +339,7 @@ shipForm.addEventListener("submit", async (e) => {
 
     try {
 
-        await setStatus(shipping, "shipped", { riderName, riderPhone, resend: shipping.status === "shipped" });
+        await setStatus(shipping, "shipped", { riderName, riderPhone, notifyAgain: shipping.status === "shipped" });
 
         shipDialog.close();
 

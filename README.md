@@ -1,6 +1,6 @@
 # Feet-First.ng
 
-Online sneaker store. Node.js, Express and MongoDB, with Paystack for payments and Resend for emails.
+Online sneaker store. Node.js, Express and MongoDB, with Paystack for payments and Brevo for emails.
 
 ## Run it locally
 
@@ -49,9 +49,16 @@ Customers see their orders in **My Orders** (`orders.html`), with a **Pay now** 
 
 ## Emails
 
-Emails go through Resend: welcome, order confirmed, order shipped (with the rider's details), order delivered, and the admin's own messages. Without `RESEND_API_KEY` they're skipped and the shop works as normal.
+Emails go through Brevo's email API: welcome, order confirmed, order shipped (with the rider's details), order delivered, and the admin's own messages. Without `BREVO_API_KEY` they're skipped and the shop works as normal.
 
-`onboarding@resend.dev` (the default sender) only delivers to the email address of your own Resend account. To email customers, verify your domain in Resend and set `EMAIL_FROM`, e.g. `FeetFirst <orders@feetfirst.ng>`.
+To set it up:
+
+1. In Brevo, go to *SMTP & API > API Keys* and create an API key. Put it in `BREVO_API_KEY`.
+2. In *Senders, Domains & Dedicated IPs*, add and verify the address emails come from, and put it in `EMAIL_FROM`, e.g. `FeetFirst <orders@feetfirst.ng>`. Verifying your whole domain (not just one address) keeps emails out of spam.
+
+Brevo's free plan sends up to 300 emails a day. An ALL USERS email counts one per customer.
+
+The emails go over HTTPS rather than the usual email ports, so they work on hosts that block those ports (e.g. Render's free plan).
 
 ## Going live
 
@@ -61,7 +68,7 @@ On your host (Render, Railway, ...), set these environment variables:
 - `MONGO_URI`, `JWT_SECRET`
 - `PAYSTACK_SECRET_KEY`
 - `PUBLIC_URL` = your site's address, e.g. `https://feetfirst.ng`
-- `RESEND_API_KEY` and `EMAIL_FROM` for emails
+- `BREVO_API_KEY` and `EMAIL_FROM` for emails
 
 The server refuses to start in production without a Paystack key, unless `SIMULATE_PAYMENTS=true` is set. That setting fakes payments for trying the site out, so remove it before real customers use the site.
 
@@ -76,7 +83,7 @@ models/                User, Product, Cart, Order
 routes/                the API: users, products, cart, favorites, orders, payments, admin
 services/paystack.js   talks to Paystack
 services/orders.js     starting and confirming payments
-services/email.js      the emails (Resend)
+services/email.js      the emails (Brevo)
 middleware/            login checks and the login rate limit
 public/                the website: one .html, .css and .js file per page
   css/common.css       styles shared by every page
@@ -87,4 +94,9 @@ public/                the website: one .html, .css and .js file per page
 
 The background photos have smaller `.webp` copies next to them in `public/images`. Browsers that support WebP get those automatically.
 
-`npm run seed:products` adds the products in `seedProducts.js`, or updates them if they're already in the shop. Existing products keep their IDs, so carts, saved items and orders keep working.
+## Products
+
+- `npm run seed:products` adds the products in `seedProducts.js`, or updates them if they're already in the shop. Existing products keep their IDs, so carts, saved items and orders keep working. Products removed from the list are left alone (set `inStock: false` to hide one).
+- `npm run seed:products:fresh` deletes every product and loads the list from scratch. Past orders keep their own copy of each item's name, price and photo, so they're unaffected. Customers' carts and saved items are emptied.
+
+Both work on the database in `MONGO_URI`, so check which one that is before running them.

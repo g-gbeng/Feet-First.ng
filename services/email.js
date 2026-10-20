@@ -1,21 +1,40 @@
 /*
-  Emails through Resend. Every piece of text is escaped before it goes into
+  Emails through Brevo's email API (https://www.brevo.com), the same way as TechRider:
+  one HTTPS request per email, so it also works on hosts that block email ports
+  (e.g. Render's free plan). Every piece of text is escaped before it goes into
   the HTML, so a name or message can't change the email's layout or add links.
 
-  Without RESEND_API_KEY, emails are skipped (and logged), so the shop still works.
+  Without BREVO_API_KEY, emails are skipped (and logged), so the shop still works.
 */
-
-const { Resend } = require("resend");
 
 const { env } = require("../config/env");
 
-let client = null;
+const isConfigured = () => !!env.email.brevoKey;
 
-const isConfigured = () => !!env.email.resendKey;
+/* "FeetFirst <orders@feetfirst.ng>" -> { name, email } */
+function sender() {
+    const match = /^\s*(.*?)\s*<([^>]+)>\s*$/.exec(env.email.from);
+    return match ? { name: match[1] || "FeetFirst", email: match[2] } : { name: "FeetFirst", email: env.email.from.trim() };
+}
 
-function resend() {
-    if (!client) client = new Resend(env.email.resendKey);
-    return client;
+async function brevoSend({ to, subject, html }) {
+
+    const res = await fetch(`${env.email.brevoBase}/v3/smtp/email`, {
+        method: "POST",
+        headers: { "api-key": env.email.brevoKey, "content-type": "application/json", accept: "application/json" },
+        body: JSON.stringify({ sender: sender(), to: [{ email: to }], subject, htmlContent: html })
+    });
+
+    if (!res.ok) {
+        let detail = "";
+        try {
+            detail = (await res.json()).message || "";
+        } catch {
+            /* not JSON */
+        }
+        throw new Error(`Brevo could not send the email (${res.status}${detail ? ": " + detail : ""})`);
+    }
+
 }
 
 function esc(value) {
@@ -70,7 +89,8 @@ function itemsTable(order) {
 }
 
 /*
-  Sends one email per recipient (so nobody sees anyone else's address).
+  Sends one email per recipient (so nobody sees anyone else's address),
+  a few at a time.
   messages: [{ to, subject, html }]
   Returns { sent, failed, skipped }.
 */
@@ -82,39 +102,24 @@ async function sendMany(messages) {
     if (!messages.length) return { sent: 0, failed: 0, skipped: false };
 
     if (!isConfigured()) {
-        console.log(`Email skipped (no RESEND_API_KEY): "${messages[0].subject}" to ${messages.length} recipient(s)`);
+        console.log(`Email skipped (no BREVO_API_KEY): "${messages[0].subject}" to ${messages.length} recipient(s)`);
         return { sent: 0, failed: 0, skipped: true };
     }
 
     let sent = 0;
     let failed = 0;
 
-    // Resend accepts up to 100 separate emails per batch request
-    for (let i = 0; i < messages.length; i += 100) {
+    for (let i = 0; i < messages.length; i += 5) {
 
-        const chunk = messages.slice(i, i + 100).map((m) => ({
-            from: env.email.from,
-            to: [m.to],
-            subject: m.subject,
-            html: m.html
-        }));
+        const results = await Promise.allSettled(messages.slice(i, i + 5).map(brevoSend));
 
-        try {
-
-            const response = chunk.length === 1
-                ? await resend().emails.send(chunk[0])
-                : await resend().batch.send(chunk);
-
-            if (response.error) {
-                failed += chunk.length;
-                console.error("Email failed:", response.error.message);
+        for (const result of results) {
+            if (result.status === "fulfilled") {
+                sent++;
             } else {
-                sent += chunk.length;
+                failed++;
+                console.error("Email failed:", result.reason.message);
             }
-
-        } catch (err) {
-            failed += chunk.length;
-            console.error("Email failed:", err.message);
         }
 
     }

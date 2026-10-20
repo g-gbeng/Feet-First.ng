@@ -958,53 +958,88 @@ const products = [
 ];
 
 /*
-  Adds the products above, or updates them if they're already in the shop
-  (matched by name, variant and brand; when the list has the same product twice,
-  the entries are matched in order). Existing products keep their IDs, so carts,
-  saved items and orders that point to them keep working. Products removed from
-  this list are left alone: mark them out of stock in the database instead.
+  npm run seed:products
+    Adds the products above, or updates them if they're already in the shop
+    (matched by name, variant and brand; when the list has the same product twice,
+    the entries are matched in order). Existing products keep their IDs, so carts,
+    saved items and orders that point to them keep working. Products removed from
+    this list are left alone.
+
+  npm run seed:products -- --fresh
+    Deletes every product and loads the list above from scratch (new IDs).
+    Past orders keep their own copy of each item's name, price and photo, so they're
+    unaffected. Customers' carts and saved items are emptied, because they pointed
+    at the deleted products.
 */
+
+const Cart = require("./models/cart");
+const User = require("./models/user");
+
+const fresh = process.argv.includes("--fresh");
+
+async function freshSeed() {
+
+    const removed = await Product.deleteMany({});
+
+    const inserted = await Product.insertMany(products);
+
+    const carts = await Cart.updateMany({ "items.0": { $exists: true } }, { $set: { items: [] } });
+
+    const users = await User.updateMany({ "favorites.0": { $exists: true } }, { $set: { favorites: [] } });
+
+    console.log(`Fresh reseed: removed ${removed.deletedCount} product(s), added ${inserted.length}.`);
+    console.log(`Emptied ${carts.modifiedCount} cart(s) and ${users.modifiedCount} customer(s)' saved items. Orders are unchanged.`);
+
+}
+
+async function updateSeed() {
+
+    const groups = new Map();
+
+    for (const product of products) {
+        const key = JSON.stringify([product.name, product.variant || "", product.brand]);
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(product);
+    }
+
+    let added = 0;
+    let updated = 0;
+
+    for (const list of groups.values()) {
+
+        const { name, variant, brand } = list[0];
+
+        const existing = await Product.find({ name, variant, brand }).sort({ _id: 1 });
+
+        for (let i = 0; i < list.length; i++) {
+
+            if (existing[i]) {
+                existing[i].set(list[i]);
+                if (existing[i].isModified()) {
+                    await existing[i].save();
+                    updated++;
+                }
+            } else {
+                await Product.create(list[i]);
+                added++;
+            }
+
+        }
+
+    }
+
+    console.log(`Products: ${added} added, ${updated} updated, ${products.length - added - updated} unchanged.`);
+
+}
+
 async function seedProducts() {
 
     try {
 
         await connectDB();
 
-        const groups = new Map();
-
-        for (const product of products) {
-            const key = JSON.stringify([product.name, product.variant || "", product.brand]);
-            if (!groups.has(key)) groups.set(key, []);
-            groups.get(key).push(product);
-        }
-
-        let added = 0;
-        let updated = 0;
-
-        for (const list of groups.values()) {
-
-            const { name, variant, brand } = list[0];
-
-            const existing = await Product.find({ name, variant, brand }).sort({ _id: 1 });
-
-            for (let i = 0; i < list.length; i++) {
-
-                if (existing[i]) {
-                    existing[i].set(list[i]);
-                    if (existing[i].isModified()) {
-                        await existing[i].save();
-                        updated++;
-                    }
-                } else {
-                    await Product.create(list[i]);
-                    added++;
-                }
-
-            }
-
-        }
-
-        console.log(`Products: ${added} added, ${updated} updated, ${products.length - added - updated} unchanged.`);
+        if (fresh) await freshSeed();
+        else await updateSeed();
 
     } catch (err) {
 

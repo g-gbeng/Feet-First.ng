@@ -10,7 +10,7 @@ const BRANDS = [
     { brand: "Adidas", label: "Adidas", page: "adidas-section.html", image: "/images/ADIDAS SUPERSTAR.avif", sizes: "41–45" },
     { brand: "Puma", label: "Puma", page: "puma-section.html", image: "/images/Suede-XL-Hairy.avif", sizes: "41–45" },
     { brand: "New Balance", label: "New Balance", page: "newbalance-section.html", image: "/images/NB 550.webp", sizes: "41–45" },
-    { brand: "Dunk", label: "Nike Dunks", page: "dunk-section.html", image: "/images/SB FORCE.png", sizes: "41–45" },
+    { brand: "Dunk", label: "Nike Dunks", page: "dunk-section.html", image: "/images/DUNK LOW RETRO.png", sizes: "41–45" },
     { brand: "Vans", label: "Vans", page: "vans-section.html", image: "/images/OLD-SKOOL.webp", sizes: "41–45" },
     { brand: "AirMax", label: "Nike Air Max", page: "airmax-section.html", image: "/images/Air-Max 90.png", sizes: "43–45" },
     { brand: "Jordans", label: "Air Jordans", page: "jordan-section.html", image: "/images/J1 Retro High.png", sizes: "43–45" }

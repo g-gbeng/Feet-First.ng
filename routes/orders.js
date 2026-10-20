@@ -99,12 +99,21 @@ router.post("/checkout", async (req, res) => {
 
     const items = [];
 
-    for (const line of cart.items) {
+    // products removed from the shop simply leave the cart
+    const lines = cart.items.filter((line) => byId.has(String(line.productId)));
+
+    if (lines.length !== cart.items.length) {
+        cart.items = lines;
+        await cart.save();
+        if (!lines.length) throw new HttpError(400, "Your cart is empty.");
+    }
+
+    for (const line of lines) {
 
         const product = byId.get(String(line.productId));
 
-        if (!product || !product.inStock || !product.sizes.includes(line.size)) {
-            unavailable.push(product ? `${product.name} (size ${line.size})` : "A removed product");
+        if (!product.inStock || !product.sizes.includes(line.size)) {
+            unavailable.push(`${product.name} (size ${line.size})`);
             continue;
         }
 
