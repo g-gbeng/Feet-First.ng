@@ -68,6 +68,10 @@ function checkEnv() {
         console.warn("Note: BREVO_API_KEY is not set, so emails (welcome, order updates, admin messages) are skipped.");
     }
 
+    if (env.email.brevoKey && !process.env.EMAIL_FROM) {
+        console.warn(`Warning: EMAIL_FROM is not set, so emails are sent from ${env.email.from}, which Brevo rejects unless it's a verified sender. Set EMAIL_FROM to a sender verified in Brevo, and run \`npm run email:test -- you@example.com\` to check.`);
+    }
+
 }
 
 module.exports = { env, checkEnv };

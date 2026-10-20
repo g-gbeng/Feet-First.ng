@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "seed:products": "node seedProducts.js",
     "seed:admin": "node seedAdmin.js",
-    "seed:products:fresh": "node seedProducts.js --fresh"
+    "seed:products:fresh": "node seedProducts.js --fresh",
+    "email:test": "node testEmail.js"
   },
   "repository": {
     "type": "git",

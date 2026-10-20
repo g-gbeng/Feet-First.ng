@@ -31,7 +31,9 @@ Customers see their orders in **My Orders** (`orders.html`), with a **Pay now** 
 - **To fulfil** lists paid orders. Mark one *shipped* with the rider's name and number (the customer gets an email with them), then *delivered* (the customer gets a thank-you email).
 - **Awaiting payment** lists unpaid orders. They can only stay pending or be cancelled; don't send them until they're paid.
 - Orders paid through Paystack can't be deleted, so there's always a record of the payment. Cancel them instead, and refund from the Paystack dashboard.
-- **Send email** to one customer, or to ALL USERS. ALL USERS sends a separate email to each customer, so nobody sees anyone else's address. Messages are sent as plain text.
+- **Send email** to one customer, or to ALL USERS. ALL USERS sends a separate email to each customer, so nobody sees anyone else's address. Messages are sent as plain text. Pick a template to fill in the subject and message, then change anything before sending.
+- **Email templates**: create, edit and delete reusable emails. `{{firstName}}`, `{{name}}` and `{{email}}` are filled in with each customer's details when sending (anyone who isn't a customer gets "Customer"). Text in square brackets, like `[order number]`, is for you to fill in; the page warns you if you try to send one unfilled. The first time the page opens it adds three starter templates from the original drafts (welcome, shipped, delivered); delete any you don't want.
+- **Email history** lists every email the shop sends: yours and the automatic ones (welcome, order confirmed, shipped, delivered). Each entry shows who it went to, whether it was sent, and Brevo's reason if it failed. Filter to "Failed or not sent" to spot problems.
 
 ## Paystack setup
 

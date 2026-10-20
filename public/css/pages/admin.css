@@ -318,3 +318,232 @@ body {
     }
 
 }
+
+/* ---------- section links ---------- */
+
+.sectionNav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    gap: 6px;
+    margin: -8px 0 20px;
+    padding: 10px 0;
+    overflow-x: auto;
+    background: #f8f8f8;
+    scrollbar-width: none;
+}
+
+.sectionNav a {
+    flex: none;
+    padding: 6px 14px;
+    border: 1px solid var(--line);
+    border-radius: 30px;
+    background: #fff;
+    color: var(--text);
+    font-size: .9rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.sectionNav a:hover {
+    border-color: var(--gold);
+    color: var(--gold-dark);
+}
+
+.sectionCard h2[id] {
+    scroll-margin-top: 70px;
+}
+
+.sectionSub {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+dialog.sheet.wide {
+    width: min(640px, calc(100vw - 32px));
+}
+
+/* ---------- templates ---------- */
+
+.templateGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+}
+
+.templateCard {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+}
+
+.templateCard h3 {
+    margin: 0 0 4px;
+    font-size: 1.02rem;
+    font-weight: 700;
+}
+
+.templateCard .subject {
+    margin-bottom: 8px;
+    color: var(--gold-dark);
+    font-size: .92rem;
+    font-weight: 600;
+}
+
+.templateCard .preview {
+    display: -webkit-box;
+    margin-bottom: 12px;
+    overflow: hidden;
+    color: var(--muted);
+    font-size: .88rem;
+    white-space: pre-line;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+}
+
+.templateCard .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: auto;
+}
+
+.templateCard .actions .btn {
+    padding: 4px 12px;
+    font-size: .88rem;
+}
+
+/* ---------- email history ---------- */
+
+.historyFilters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.historyFilters .form-select {
+    width: auto;
+}
+
+.historyFilters .form-control {
+    width: 260px;
+    max-width: 100%;
+}
+
+.historyItem {
+    border-bottom: 1px solid var(--line);
+}
+
+.historyItem summary {
+    display: grid;
+    grid-template-columns: 130px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 4px;
+    list-style: none;
+    cursor: pointer;
+}
+
+.historyItem summary::-webkit-details-marker {
+    display: none;
+}
+
+.historyItem summary:hover {
+    background: #fafafa;
+}
+
+.historyItem .when {
+    color: var(--muted);
+    font-size: .85rem;
+}
+
+.historyItem .what {
+    min-width: 0;
+}
+
+.historyItem .what strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.historyItem .what span {
+    display: block;
+    overflow: hidden;
+    color: var(--muted);
+    font-size: .88rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.historyItem .tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.pill.kind { background: #f1f1f4; color: #444; }
+.pill.failed { background: #fdecec; color: var(--danger); }
+.pill.partial { background: #fff4e5; color: #a15c00; }
+.pill.skipped { background: #f1f1f4; color: #666; }
+.pill.sent { background: #e8f6ec; color: var(--success); }
+
+.historyDetail {
+    margin: 0 4px 14px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: #fafafa;
+    font-size: .92rem;
+}
+
+.historyDetail dl {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 6px 12px;
+    margin: 0 0 10px;
+}
+
+.historyDetail dt {
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.historyDetail dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.historyDetail .body {
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    white-space: pre-line;
+}
+
+.historyDetail .problem {
+    color: var(--danger);
+}
+
+@media (max-width: 640px) {
+
+    .historyItem summary {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .historyItem .tags {
+        justify-content: flex-start;
+    }
+
+    .historyDetail dl {
+        grid-template-columns: 1fr;
+    }
+
+}

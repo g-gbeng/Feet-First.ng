@@ -30,6 +30,14 @@
         </div>
     </header>
 
+    <nav class="sectionNav" aria-label="Dashboard sections">
+        <a href="#ordersTitle">Orders</a>
+        <a href="#usersTitle">Customers</a>
+        <a href="#emailTitle">Send email</a>
+        <a href="#templatesTitle">Templates</a>
+        <a href="#historyTitle">Email history</a>
+    </nav>
+
     <!-- ================= STATS ================= -->
 
     <section class="statsGrid" aria-label="Summary">
@@ -95,6 +103,12 @@
 
                 <form id="emailForm" novalidate>
                     <div class="mb-3">
+                        <label class="form-label" for="emailTemplate">Template</label>
+                        <select id="emailTemplate" class="form-select">
+                            <option value="">No template: write a new email</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label" for="emailTo">Recipient</label>
                         <input list="emailSuggestions" id="emailTo" class="form-control" placeholder="Type an email or choose ALL USERS" autocomplete="off" required>
                         <datalist id="emailSuggestions"></datalist>
@@ -106,17 +120,96 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="emailMessage">Message</label>
-                        <textarea id="emailMessage" rows="6" class="form-control" maxlength="10000" required></textarea>
+                        <textarea id="emailMessage" rows="7" class="form-control" maxlength="10000" required></textarea>
+                        <small class="formHint"><code>{{firstName}}</code>, <code>{{name}}</code> and <code>{{email}}</code> are replaced with each customer's details.</small>
                     </div>
                     <p class="formNotice" id="emailResult" hidden></p>
                     <button type="submit" class="btn btn-gold w-100" id="sendEmailBtn">Send email</button>
+                    <button type="button" class="btn btn-link w-100 mt-1" id="saveAsTemplateBtn">Save this as a template</button>
                 </form>
             </section>
         </div>
 
     </div>
 
+    <!-- ================= EMAIL TEMPLATES ================= -->
+
+    <section class="sectionCard" aria-labelledby="templatesTitle">
+
+        <div class="sectionHead">
+            <div>
+                <h2 id="templatesTitle">Email templates</h2>
+                <p class="sectionSub">Reusable emails you can pick in Send email.</p>
+            </div>
+            <button type="button" class="btn btn-gold" id="newTemplateBtn">New template</button>
+        </div>
+
+        <div id="templatesList"><div class="loadingState"><span class="spinner"></span></div></div>
+
+    </section>
+
+    <!-- ================= EMAIL HISTORY ================= -->
+
+    <section class="sectionCard" aria-labelledby="historyTitle">
+
+        <div class="sectionHead">
+            <div>
+                <h2 id="historyTitle">Email history</h2>
+                <p class="sectionSub">Every email the shop has sent: yours and the automatic ones (welcome, order updates).</p>
+            </div>
+            <div class="historyFilters">
+                <label class="srOnly" for="historyType">Show</label>
+                <select id="historyType" class="form-select">
+                    <option value="all">All emails</option>
+                    <option value="admin">Sent by admin</option>
+                    <option value="automatic">Automatic</option>
+                    <option value="problems">Failed or not sent</option>
+                </select>
+                <label class="srOnly" for="historySearch">Search email history</label>
+                <input type="search" id="historySearch" class="form-control" placeholder="Search subject, recipient or order...">
+            </div>
+        </div>
+
+        <div id="historyList" aria-live="polite"><div class="loadingState"><span class="spinner"></span></div></div>
+
+        <button type="button" class="btn btn-outline-gold d-block mx-auto mt-3" id="historyMore" hidden>Show older emails</button>
+
+    </section>
+
 </div>
+
+<!-- create / edit a template -->
+<dialog class="sheet wide" id="templateDialog" aria-labelledby="templateDialogTitle">
+    <form method="dialog" id="templateForm" novalidate>
+        <div class="sheetHead">
+            <h2 id="templateDialogTitle">New template</h2>
+            <button type="button" class="iconBtn" data-close aria-label="Close"></button>
+        </div>
+        <div class="sheetBody">
+            <p class="formNotice" id="templateNotice" hidden></p>
+            <div class="field mb-3">
+                <label class="form-label" for="templateName">Template name</label>
+                <input id="templateName" class="form-control" maxlength="80" placeholder="e.g. Weekend sale" required>
+                <small class="fieldError" id="templateNameError"></small>
+            </div>
+            <div class="field mb-3">
+                <label class="form-label" for="templateSubject">Subject</label>
+                <input id="templateSubject" class="form-control" maxlength="150" required>
+                <small class="fieldError" id="templateSubjectError"></small>
+            </div>
+            <div class="field mb-2">
+                <label class="form-label" for="templateMessage">Message</label>
+                <textarea id="templateMessage" class="form-control" rows="9" maxlength="10000" required></textarea>
+                <small class="fieldError" id="templateMessageError"></small>
+                <small class="formHint">Plain text. Leave a blank line between paragraphs. <code>{{firstName}}</code>, <code>{{name}}</code> and <code>{{email}}</code> are filled in for each customer.</small>
+            </div>
+        </div>
+        <div class="sheetFoot">
+            <button type="button" class="btn btn-outline-secondary" data-close>Cancel</button>
+            <button type="submit" class="btn btn-gold" id="templateSaveBtn">Save template</button>
+        </div>
+    </form>
+</dialog>
 
 <!-- rider details when shipping -->
 <dialog class="sheet" id="shipDialog" aria-labelledby="shipTitle">

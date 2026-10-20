@@ -9,6 +9,8 @@
 
 const { env } = require("../config/env");
 
+const EmailLog = require("../models/emailLog");
+
 const isConfigured = () => !!env.email.brevoKey;
 
 /* "FeetFirst <orders@feetfirst.ng>" -> { name, email } */
@@ -88,53 +90,117 @@ function itemsTable(order) {
 
 }
 
+/* Writes the email history entry; a history problem never stops an email */
+async function record(log, result, messages) {
+
+    try {
+
+        const status = result.skipped ? "skipped"
+            : result.failed === 0 ? "sent"
+            : result.sent === 0 ? "failed"
+            : "partial";
+
+        await EmailLog.create({
+            kind: log.kind,
+            toLabel: log.toLabel || (messages.length === 1 ? messages[0].to : `${messages.length} recipients`),
+            recipients: messages.slice(0, 500).map((m) => m.to),
+            recipientCount: messages.length,
+            subject: log.subject || messages[0]?.subject || "",
+            message: log.message || "",
+            template: log.template ? { name: log.template } : undefined,
+            orderId: log.orderId,
+            status,
+            sent: result.sent,
+            failed: result.failed,
+            failedRecipients: result.failedRecipients.slice(0, 100),
+            reasons: result.skipped ? ["BREVO_API_KEY is not set, so the email wasn't sent."] : result.reasons.slice(0, 5),
+            sentBy: log.sentBy
+        });
+
+    } catch (err) {
+        console.error("Couldn't save email history:", err.message);
+    }
+
+}
+
 /*
   Sends one email per recipient (so nobody sees anyone else's address),
-  a few at a time.
+  a few at a time, and records it in the email history.
   messages: [{ to, subject, html }]
-  Returns { sent, failed, skipped }.
+  log: { kind, toLabel?, subject?, message?, template?, orderId?, sentBy? }
+  Returns { sent, failed, skipped, failedRecipients, reasons }.
 */
-async function sendMany(messages) {
+async function sendMany(messages, log) {
 
     // e.g. orders from before checkout asked for an email
     messages = messages.filter((m) => m.to);
 
-    if (!messages.length) return { sent: 0, failed: 0, skipped: false };
+    const result = { sent: 0, failed: 0, skipped: false, failedRecipients: [], reasons: [] };
+
+    if (!messages.length) return result;
 
     if (!isConfigured()) {
+
         console.log(`Email skipped (no BREVO_API_KEY): "${messages[0].subject}" to ${messages.length} recipient(s)`);
-        return { sent: 0, failed: 0, skipped: true };
-    }
 
-    let sent = 0;
-    let failed = 0;
+        result.skipped = true;
 
-    for (let i = 0; i < messages.length; i += 5) {
+    } else {
 
-        const results = await Promise.allSettled(messages.slice(i, i + 5).map(brevoSend));
+        for (let i = 0; i < messages.length; i += 5) {
 
-        for (const result of results) {
-            if (result.status === "fulfilled") {
-                sent++;
-            } else {
-                failed++;
-                console.error("Email failed:", result.reason.message);
-            }
+            const batch = messages.slice(i, i + 5);
+
+            const outcomes = await Promise.allSettled(batch.map(brevoSend));
+
+            outcomes.forEach((outcome, j) => {
+
+                if (outcome.status === "fulfilled") {
+                    result.sent++;
+                    return;
+                }
+
+                result.failed++;
+                result.failedRecipients.push(batch[j].to);
+
+                if (!result.reasons.includes(outcome.reason.message)) result.reasons.push(outcome.reason.message);
+
+                console.error("Email failed:", outcome.reason.message);
+
+            });
+
         }
 
     }
 
-    return { sent, failed, skipped: false };
+    if (log) await record(log, result, messages);
+
+    return result;
 
 }
 
-async function sendOne(to, subject, innerHtml) {
-    return sendMany([{ to, subject, html: layout(innerHtml) }]);
+async function sendOne(to, subject, innerHtml, log) {
+    return sendMany([{ to, subject, html: layout(innerHtml) }], log);
 }
 
 /* Never let an email problem break the request that triggered it */
 function quietly(promise) {
     promise.catch((err) => console.error("Email failed:", err.message));
+}
+
+/* {{name}}, {{firstName}} and {{email}} in a template, filled in per recipient */
+function fillPlaceholders(textBody, person) {
+
+    const name = String(person.name || "").trim();
+
+    const values = {
+        name: name || "Customer",
+        firstname: name.split(/\s+/)[0] || "Customer",
+        email: person.email || ""
+    };
+
+    return String(textBody || "").replace(/\{\{\s*(name|firstName|email)\s*\}\}/gi, (_, key) => values[key.toLowerCase()]);
+
 }
 
 /* ---------------- the shop's emails ---------------- */
@@ -143,7 +209,7 @@ function welcome(user) {
     quietly(sendOne(user.email, "Welcome to FeetFirst.ng", `
 <p style="margin:0 0 16px">Hello ${esc(user.name)},</p>
 <p style="margin:0 0 16px">Welcome to the FeetFirst.ng family! Your account has been created successfully.</p>
-<p style="margin:0">Have fun shopping!</p>`));
+<p style="margin:0">Have fun shopping!</p>`, { kind: "welcome", message: `Welcome email for ${user.name}'s new account.` }));
 }
 
 function orderConfirmed(order) {
@@ -151,7 +217,7 @@ function orderConfirmed(order) {
 <p style="margin:0 0 16px">Hello ${esc(order.name)},</p>
 <p style="margin:0 0 16px">We've received your payment. Your order <strong>${esc(order.orderId)}</strong> has been created, and we'll let you know when it's on its way.</p>
 ${itemsTable(order)}
-<p style="margin:0">Delivering to: ${esc(order.address)}</p>`));
+<p style="margin:0">Delivering to: ${esc(order.address)}</p>`, { kind: "order-confirmed", orderId: order.orderId, message: `Payment received for order ${order.orderId} (${money(order.total)}).` }));
 }
 
 function orderShipped(order) {
@@ -166,7 +232,11 @@ Rider number: <strong>${esc(order.rider.phone || "—")}</strong></p>`
 <p style="margin:0 0 16px">Hello ${esc(order.name)},</p>
 <p style="margin:0 0 16px">Good news! Your order <strong>${esc(order.orderId)}</strong> has been shipped.</p>
 ${rider}
-<p style="margin:0">Thank you for shopping with FeetFirst.ng.</p>`));
+<p style="margin:0">Thank you for shopping with FeetFirst.ng.</p>`, {
+        kind: "order-shipped",
+        orderId: order.orderId,
+        message: `Order ${order.orderId} shipped.${order.rider && (order.rider.name || order.rider.phone) ? ` Rider: ${order.rider.name || "—"}, ${order.rider.phone || "—"}.` : ""}`
+    }));
 
 }
 
@@ -174,15 +244,23 @@ function orderDelivered(order) {
     quietly(sendOne(order.email, `Order ${order.orderId} delivered`, `
 <p style="margin:0 0 16px">Hello ${esc(order.name)},</p>
 <p style="margin:0 0 16px">Your order <strong>${esc(order.orderId)}</strong> has been delivered. We at FeetFirst.ng hope you enjoy your package.</p>
-<p style="margin:0">Thank you for shopping with FeetFirst.ng.</p>`));
+<p style="margin:0">Thank you for shopping with FeetFirst.ng.</p>`, { kind: "order-delivered", orderId: order.orderId, message: `Order ${order.orderId} delivered.` }));
 }
 
-/* Admin's own message (plain text, escaped) */
-function custom(recipients, subject, message) {
+/*
+  The admin's own message (plain text, escaped), personalised per recipient.
+  people: [{ email, name? }]
+  log: { toLabel, template?, sentBy }
+*/
+function custom(people, subject, message, log = {}) {
 
-    const html = layout(paragraphs(message));
+    const messages = people.map((person) => ({
+        to: person.email,
+        subject: fillPlaceholders(subject, person),
+        html: layout(paragraphs(fillPlaceholders(message, person)))
+    }));
 
-    return sendMany(recipients.map((to) => ({ to, subject, html })));
+    return sendMany(messages, { kind: "admin", subject, message, ...log });
 
 }
 

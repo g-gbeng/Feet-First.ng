@@ -67,7 +67,9 @@ app.use("/api", (req, res, next) => {
     if (!["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) return next();
 
     // forms always send another content type; the site's own pages send JSON (or nothing)
-    if (req.get("content-type") && !req.is("application/json")) {
+    const type = req.get("content-type");
+
+    if (type && !/^application\/json\b/i.test(type)) {
         return res.status(415).json({ success: false, message: "Requests must be sent as JSON." });
     }
 

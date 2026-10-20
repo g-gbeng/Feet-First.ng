@@ -390,7 +390,57 @@ function renderEmailOptions() {
 
 }
 
-document.getElementById("emailForm").addEventListener("submit", async (e) => {
+const emailForm = document.getElementById("emailForm");
+const templateSelect = document.getElementById("emailTemplate");
+const emailSubject = document.getElementById("emailSubject");
+const emailMessage = document.getElementById("emailMessage");
+
+let templates = [];
+
+/* what the form held when a template was last applied (to spot the admin's own edits) */
+let appliedTemplate = { subject: "", message: "" };
+
+function formEdited() {
+    return (emailSubject.value.trim() || emailMessage.value.trim()) &&
+        (emailSubject.value !== appliedTemplate.subject || emailMessage.value !== appliedTemplate.message);
+}
+
+function useTemplate(id) {
+
+    document.getElementById("emailResult").hidden = true;
+
+    const template = templates.find((t) => t._id === id);
+
+    if (!template) {
+        appliedTemplate = { subject: emailSubject.value, message: emailMessage.value };
+        return;
+    }
+
+    emailSubject.value = template.subject;
+    emailMessage.value = template.message;
+
+    appliedTemplate = { subject: template.subject, message: template.message };
+
+}
+
+let lastTemplateChoice = "";
+
+templateSelect.addEventListener("change", () => {
+
+    const id = templateSelect.value;
+
+    if (id && formEdited() && !confirm("Replace the subject and message you've written with this template?")) {
+        templateSelect.value = lastTemplateChoice;
+        return;
+    }
+
+    lastTemplateChoice = id;
+
+    useTemplate(id);
+
+});
+
+emailForm.addEventListener("submit", async (e) => {
 
     e.preventDefault();
 
@@ -398,8 +448,8 @@ document.getElementById("emailForm").addEventListener("submit", async (e) => {
     const result = document.getElementById("emailResult");
 
     const to = document.getElementById("emailTo").value.trim();
-    const subject = document.getElementById("emailSubject").value.trim();
-    const message = document.getElementById("emailMessage").value.trim();
+    const subject = emailSubject.value.trim();
+    const message = emailMessage.value.trim();
 
     result.hidden = true;
     result.classList.remove("ok");
@@ -410,6 +460,8 @@ document.getElementById("emailForm").addEventListener("submit", async (e) => {
         return;
     }
 
+    if (/\[[^\]]+\]/.test(subject + message) && !confirm("The email still has a [placeholder] in square brackets, e.g. [order number]. Send it anyway?")) return;
+
     if (to.toUpperCase() === "ALL USERS") {
         const count = data.users.filter((u) => !u.isAdmin).length;
         if (!confirm(`Send this email to all ${count} customers?`)) return;
@@ -419,13 +471,20 @@ document.getElementById("emailForm").addEventListener("submit", async (e) => {
 
     try {
 
-        const response = await api("/api/admin/send-email", { method: "POST", body: { to, subject, message } });
+        const response = await api("/api/admin/send-email", {
+            method: "POST",
+            body: { to, subject, message, templateId: templateSelect.value || undefined }
+        });
 
         result.textContent = response.message;
         result.classList.toggle("ok", !response.failed);
         result.hidden = false;
 
-        if (!response.failed) e.target.reset();
+        if (!response.failed) {
+            emailForm.reset();
+            lastTemplateChoice = "";
+            appliedTemplate = { subject: "", message: "" };
+        }
 
     } catch (err) {
 
@@ -436,8 +495,317 @@ document.getElementById("emailForm").addEventListener("submit", async (e) => {
 
         setBusy(button, false);
 
+        loadHistory();
+
     }
 
+});
+
+/* ---------- email templates ---------- */
+
+const templatesList = document.getElementById("templatesList");
+const templateDialog = document.getElementById("templateDialog");
+const templateForm = document.getElementById("templateForm");
+
+let editingTemplate = null;
+
+templateDialog.querySelectorAll("[data-close]").forEach((b) => {
+    if (b.classList.contains("iconBtn")) b.innerHTML = icon("close");
+    b.addEventListener("click", () => templateDialog.close());
+});
+
+function renderTemplates() {
+
+    // the Send email picker
+    const chosen = templateSelect.value;
+
+    templateSelect.innerHTML = `<option value="">No template: write a new email</option>` +
+        templates.map((t) => `<option value="${esc(t._id)}">${esc(t.name)}</option>`).join("");
+
+    templateSelect.value = templates.some((t) => t._id === chosen) ? chosen : "";
+
+    lastTemplateChoice = templateSelect.value;
+
+    // the Templates section
+    templatesList.innerHTML = templates.length
+        ? `<div class="templateGrid">${templates.map((t) => `
+            <article class="templateCard" data-id="${esc(t._id)}">
+                <h3>${esc(t.name)}</h3>
+                <div class="subject">${esc(t.subject)}</div>
+                <div class="preview">${esc(t.message)}</div>
+                <div class="actions">
+                    <button type="button" class="btn btn-gold" data-template="use">Use</button>
+                    <button type="button" class="btn btn-outline-secondary" data-template="edit">Edit</button>
+                    <button type="button" class="btn btn-outline-danger" data-template="delete" aria-label="Delete template ${esc(t.name)}">${icon("trash")}</button>
+                </div>
+            </article>`).join("")}</div>`
+        : `<div class="emptyState">No templates yet. Create one to reuse an email you send often.</div>`;
+
+}
+
+async function loadTemplates() {
+
+    try {
+        templates = (await api("/api/admin/templates")).templates;
+        renderTemplates();
+    } catch (err) {
+        templatesList.innerHTML = `<div class="emptyState">Couldn't load templates: ${esc(err.message)}</div>`;
+    }
+
+}
+
+function openTemplateDialog(template, prefill) {
+
+    editingTemplate = template || null;
+
+    const values = template || prefill || { name: "", subject: "", message: "" };
+
+    document.getElementById("templateDialogTitle").textContent = template ? "Edit template" : "New template";
+    document.getElementById("templateName").value = values.name || "";
+    document.getElementById("templateSubject").value = values.subject || "";
+    document.getElementById("templateMessage").value = values.message || "";
+    document.getElementById("templateNotice").hidden = true;
+
+    showFieldErrors(templateForm, {});
+
+    templateDialog.showModal();
+
+    document.getElementById("templateName").focus();
+
+}
+
+document.getElementById("newTemplateBtn").addEventListener("click", () => openTemplateDialog());
+
+document.getElementById("saveAsTemplateBtn").addEventListener("click", () => {
+
+    if (!emailSubject.value.trim() && !emailMessage.value.trim()) {
+        toast("Write a subject and message first.", "error");
+        return;
+    }
+
+    openTemplateDialog(null, { name: "", subject: emailSubject.value.trim(), message: emailMessage.value.trim() });
+
+});
+
+templateForm.addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
+    const button = document.getElementById("templateSaveBtn");
+    const notice = document.getElementById("templateNotice");
+
+    const body = {
+        name: document.getElementById("templateName").value.trim(),
+        subject: document.getElementById("templateSubject").value.trim(),
+        message: document.getElementById("templateMessage").value.trim()
+    };
+
+    const errors = {};
+    if (!body.name) errors.templateName = "Give the template a name.";
+    if (!body.subject) errors.templateSubject = "Enter a subject.";
+    if (!body.message) errors.templateMessage = "Enter the message.";
+
+    showFieldErrors(templateForm, errors);
+
+    if (Object.keys(errors).length) return;
+
+    notice.hidden = true;
+
+    setBusy(button, true, "Saving...");
+
+    try {
+
+        const saved = editingTemplate
+            ? await api(`/api/admin/templates/${encodeURIComponent(editingTemplate._id)}`, { method: "PUT", body })
+            : await api("/api/admin/templates", { method: "POST", body });
+
+        templateDialog.close();
+
+        toast(editingTemplate ? `"${saved.template.name}" saved.` : `"${saved.template.name}" added.`);
+
+        await loadTemplates();
+
+    } catch (err) {
+
+        if (err.data && err.data.errors) showFieldErrors(templateForm, err.data.errors);
+        else {
+            notice.textContent = err.message;
+            notice.hidden = false;
+        }
+
+    } finally {
+
+        setBusy(button, false);
+
+    }
+
+});
+
+templatesList.addEventListener("click", async (e) => {
+
+    const button = e.target.closest("[data-template]");
+
+    if (!button) return;
+
+    const template = templates.find((t) => t._id === button.closest(".templateCard").dataset.id);
+
+    if (!template) return;
+
+    const action = button.dataset.template;
+
+    if (action === "edit") {
+        openTemplateDialog(template);
+        return;
+    }
+
+    if (action === "use") {
+
+        if (formEdited() && !confirm("Replace the subject and message you've written with this template?")) return;
+
+        templateSelect.value = template._id;
+        lastTemplateChoice = template._id;
+        useTemplate(template._id);
+
+        document.getElementById("emailTitle").scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("emailTo").focus({ preventScroll: true });
+
+        return;
+
+    }
+
+    if (action === "delete") {
+
+        if (!confirm(`Delete the template "${template.name}"? Emails already sent aren't affected.`)) return;
+
+        button.disabled = true;
+
+        try {
+            await api(`/api/admin/templates/${encodeURIComponent(template._id)}`, { method: "DELETE" });
+            toast(`"${template.name}" deleted.`);
+            await loadTemplates();
+        } catch (err) {
+            button.disabled = false;
+            toast(err.message, "error");
+        }
+
+    }
+
+});
+
+/* ---------- email history ---------- */
+
+const historyList = document.getElementById("historyList");
+const historyType = document.getElementById("historyType");
+const historySearch = document.getElementById("historySearch");
+const historyMore = document.getElementById("historyMore");
+
+const KIND_LABEL = {
+    admin: "Sent by admin",
+    welcome: "Welcome",
+    "order-confirmed": "Order confirmed",
+    "order-shipped": "Order shipped",
+    "order-delivered": "Order delivered"
+};
+
+const STATUS_TEXT = { sent: "Sent", partial: "Partly sent", failed: "Failed", skipped: "Not sent" };
+
+let historyItems = [];
+let historyRequest = 0;
+
+function recipientsText(e) {
+    if (e.toLabel === "ALL USERS") return `All customers (${e.recipientCount})`;
+    return e.toLabel || (e.recipients || []).join(", ");
+}
+
+function historyRow(e) {
+
+    const problems = (e.reasons || []).length
+        ? `<p class="problem"><strong>Why:</strong> ${e.reasons.map(esc).join("<br>")}</p>`
+        : "";
+
+    const failedList = (e.failedRecipients || []).length
+        ? `<div><dt>Not delivered to</dt><dd>${e.failedRecipients.map(esc).join(", ")}</dd></div>`
+        : "";
+
+    const many = e.recipientCount > 1
+        ? `<div><dt>Recipients</dt><dd>${(e.recipients || []).map(esc).join(", ")}${e.recipientCount > (e.recipients || []).length ? ` and ${e.recipientCount - e.recipients.length} more` : ""}</dd></div>`
+        : "";
+
+    return `
+        <details class="historyItem">
+            <summary>
+                <span class="when">${formatDate(e.createdAt, true)}</span>
+                <span class="what">
+                    <strong>${esc(e.subject || "(no subject)")}</strong>
+                    <span>To ${esc(recipientsText(e))}</span>
+                </span>
+                <span class="tags">
+                    <span class="pill kind">${esc(KIND_LABEL[e.kind] || e.kind)}</span>
+                    <span class="pill ${esc(e.status)}">${esc(STATUS_TEXT[e.status] || e.status)}${e.status === "partial" ? ` ${e.sent}/${e.recipientCount}` : ""}</span>
+                </span>
+            </summary>
+            <div class="historyDetail">
+                <dl>
+                    <div><dt>Sent</dt><dd>${formatDate(e.createdAt, true)}${e.sentBy ? ` by ${esc(e.sentBy)}` : " automatically"}</dd></div>
+                    <div><dt>To</dt><dd>${esc(recipientsText(e))}</dd></div>
+                    ${many}
+                    ${e.template?.name ? `<div><dt>Template</dt><dd>${esc(e.template.name)}</dd></div>` : ""}
+                    ${e.orderId ? `<div><dt>Order</dt><dd>${esc(e.orderId)}</dd></div>` : ""}
+                    <div><dt>Result</dt><dd>${e.sent} sent${e.failed ? `, ${e.failed} failed` : ""}${e.status === "skipped" ? " (email not set up)" : ""}</dd></div>
+                    ${failedList}
+                </dl>
+                ${problems}
+                ${e.message ? `<div class="body">${esc(e.message)}</div>` : ""}
+            </div>
+        </details>`;
+
+}
+
+async function loadHistory({ more = false } = {}) {
+
+    const request = ++historyRequest;
+
+    const params = new URLSearchParams({ type: historyType.value });
+
+    if (historySearch.value.trim()) params.set("q", historySearch.value.trim());
+
+    if (more && historyItems.length) params.set("before", historyItems[historyItems.length - 1].createdAt);
+
+    try {
+
+        const response = await api(`/api/admin/email-history?${params}`);
+
+        if (request !== historyRequest) return; // a newer search started meanwhile
+
+        historyItems = more ? historyItems.concat(response.items) : response.items;
+
+        historyList.innerHTML = historyItems.length
+            ? historyItems.map(historyRow).join("")
+            : `<div class="emptyState">${historySearch.value.trim() || historyType.value !== "all" ? "No emails match." : "No emails sent yet."}</div>`;
+
+        historyMore.hidden = !response.more;
+
+    } catch (err) {
+
+        if (request === historyRequest) historyList.innerHTML = `<div class="emptyState">Couldn't load email history: ${esc(err.message)}</div>`;
+
+    }
+
+}
+
+historyType.addEventListener("change", () => loadHistory());
+
+let historyTimer;
+
+historySearch.addEventListener("input", () => {
+    clearTimeout(historyTimer);
+    historyTimer = setTimeout(() => loadHistory(), 300);
+});
+
+historyMore.addEventListener("click", async () => {
+    setBusy(historyMore, true, "Loading...");
+    await loadHistory({ more: true });
+    setBusy(historyMore, false);
 });
 
 /* ---------- header ---------- */
@@ -448,7 +816,7 @@ refreshBtn.addEventListener("click", async () => {
 
     setBusy(refreshBtn, true, "Refreshing...");
 
-    await load();
+    await Promise.all([load(), loadHistory()]);
 
     setBusy(refreshBtn, false);
 
@@ -468,9 +836,12 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
 
 load().then(() => {
 
+    loadTemplates();
+    loadHistory();
+
     // pick up new orders while the page is open (not while a dialog is open)
     setInterval(() => {
-        if (document.visibilityState === "visible" && !shipDialog.open) load();
+        if (document.visibilityState === "visible" && !shipDialog.open && !templateDialog.open) load();
     }, 60000);
 
 });

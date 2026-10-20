@@ -10,6 +10,9 @@ const router = express.Router();
 
 const User = require("../models/user");
 const Order = require("../models/order");
+const EmailTemplate = require("../models/emailTemplate");
+const EmailLog = require("../models/emailLog");
+const Setting = require("../models/setting");
 
 const adminAuth = require("../middleware/adminAuth");
 const rateLimit = require("../middleware/rateLimit");
@@ -229,8 +232,132 @@ router.delete("/orders/:id", async (req, res) => {
 });
 
 /* ============================================================
+   EMAIL TEMPLATES
+   Placeholders {{name}}, {{firstName}} and {{email}} are filled in
+   for each recipient when the email is sent.
+============================================================ */
+
+// The drafts that were in .env, added once so there's something to start from
+const STARTER_TEMPLATES = [
+    {
+        name: "Welcome",
+        subject: "Welcome to FeetFirst.ng",
+        message: "Hello {{firstName}},\n\nWelcome to the FeetFirst.ng family! Your registration has been successfully completed.\n\nHave fun shopping!"
+    },
+    {
+        name: "Order shipped (rider details)",
+        subject: "Your FeetFirst.ng order is on its way",
+        message: "Hello {{firstName}},\n\nYour order [order number] has been shipped.\n\nThe rider's details are:\nRider name: [name]\nRider number: [number]\n\nThank you for shopping with FeetFirst.ng."
+    },
+    {
+        name: "Order delivered",
+        subject: "Your FeetFirst.ng order has been delivered",
+        message: "Hello {{firstName}},\n\nYour order [order number] has been delivered. We at FeetFirst.ng hope you enjoy your package.\n\nThank you for shopping with FeetFirst.ng."
+    }
+];
+
+async function addStarterTemplates() {
+
+    // the flag makes sure deleted starter templates don't come back
+    const claimed = await Setting.updateOne(
+        { _id: "starterTemplates" },
+        { $setOnInsert: { value: true } },
+        { upsert: true }
+    );
+
+    if (claimed.upsertedCount === 1 && (await EmailTemplate.countDocuments()) === 0) {
+        await EmailTemplate.insertMany(STARTER_TEMPLATES);
+    }
+
+}
+
+function templateInput(body) {
+
+    const name = text(body.name, 80);
+    const subject = text(body.subject, 150);
+    const message = String(body.message ?? "").replace(/\r\n/g, "\n").trim().slice(0, 10000);
+
+    const errors = {};
+
+    if (!name) errors.templateName = "Give the template a name.";
+    if (!subject) errors.templateSubject = "Enter a subject.";
+    if (!message) errors.templateMessage = "Enter the message.";
+
+    if (Object.keys(errors).length) throw new HttpError(400, Object.values(errors)[0], { errors });
+
+    return { name, subject, message };
+
+}
+
+async function checkNameFree(name, exceptId) {
+
+    const all = await EmailTemplate.find({}, { name: 1 }).lean();
+
+    const taken = all.some((t) => t.name.toLowerCase() === name.toLowerCase() && String(t._id) !== String(exceptId));
+
+    if (taken) {
+        throw new HttpError(400, "There's already a template with that name.", { errors: { templateName: "There's already a template with that name." } });
+    }
+
+}
+
+const templateView = (t) => ({ _id: t._id, name: t.name, subject: t.subject, message: t.message, updatedAt: t.updatedAt });
+
+router.get("/templates", async (req, res) => {
+
+    await addStarterTemplates();
+
+    const templates = await EmailTemplate.find().sort({ name: 1 }).lean();
+
+    res.json({ success: true, templates: templates.map(templateView) });
+
+});
+
+router.post("/templates", async (req, res) => {
+
+    const input = templateInput(req.body);
+
+    if ((await EmailTemplate.countDocuments()) >= 100) throw new HttpError(400, "You can keep up to 100 templates. Delete one first.");
+
+    await checkNameFree(input.name);
+
+    const template = await EmailTemplate.create(input);
+
+    res.status(201).json({ success: true, template: templateView(template) });
+
+});
+
+router.put("/templates/:id", async (req, res) => {
+
+    const template = isObjectId(req.params.id) && await EmailTemplate.findById(req.params.id);
+
+    if (!template) throw new HttpError(404, "Template not found.");
+
+    const input = templateInput(req.body);
+
+    await checkNameFree(input.name, template._id);
+
+    template.set(input);
+
+    await template.save();
+
+    res.json({ success: true, template: templateView(template) });
+
+});
+
+router.delete("/templates/:id", async (req, res) => {
+
+    const result = isObjectId(req.params.id) && await EmailTemplate.deleteOne({ _id: req.params.id });
+
+    if (!result || result.deletedCount === 0) throw new HttpError(404, "Template not found.");
+
+    res.json({ success: true });
+
+});
+
+/* ============================================================
    SEND EMAIL
-   POST /api/admin/send-email  { to: "ALL USERS" | email, subject, message }
+   POST /api/admin/send-email  { to: "ALL USERS" | email, subject, message, templateId? }
    "ALL USERS" sends a separate email to each customer, so nobody sees the others' addresses.
 ============================================================ */
 
@@ -238,7 +365,7 @@ router.post("/send-email", async (req, res) => {
 
     const to = text(req.body.to, 120);
     const subject = text(req.body.subject, 150);
-    const message = text(req.body.message, 10000);
+    const message = String(req.body.message ?? "").replace(/\r\n/g, "\n").trim().slice(0, 10000);
 
     if (!to || !subject || !message) throw new HttpError(400, "Recipient, subject and message are all required.");
 
@@ -246,26 +373,42 @@ router.post("/send-email", async (req, res) => {
         throw new HttpError(503, "Email isn't set up yet: add BREVO_API_KEY to the server's settings.");
     }
 
-    let recipients;
+    let people;
+    let toLabel;
 
     if (to.toUpperCase() === "ALL USERS") {
 
-        recipients = (await User.find({ isAdmin: { $ne: true } }, { email: 1 }).lean()).map((u) => u.email);
+        people = await User.find({ isAdmin: { $ne: true } }, { email: 1, name: 1 }).lean();
 
-        if (!recipients.length) throw new HttpError(400, "There are no customers to email yet.");
+        if (!people.length) throw new HttpError(400, "There are no customers to email yet.");
+
+        toLabel = "ALL USERS";
 
     } else {
 
         if (!EMAIL.test(to)) throw new HttpError(400, "Enter a valid email address, or choose ALL USERS.");
 
-        recipients = [to.toLowerCase()];
+        const address = to.toLowerCase();
+
+        // a customer's own name fills in {{name}}; anyone else gets "Customer"
+        const customer = await User.findOne({ email: address }, { email: 1, name: 1 }).lean();
+
+        people = [customer || { email: address }];
+
+        toLabel = address;
 
     }
 
-    const result = await email.custom(recipients, subject, message);
+    const template = isObjectId(req.body.templateId) ? await EmailTemplate.findById(req.body.templateId).lean() : null;
+
+    const result = await email.custom(people, subject, message, {
+        toLabel,
+        template: template ? template.name : undefined,
+        sentBy: req.admin.email
+    });
 
     if (result.sent === 0) {
-        throw new HttpError(502, "The email couldn't be sent. Check the server log for the reason from Brevo.");
+        throw new HttpError(502, `The email couldn't be sent. ${result.reasons[0] || "Check the server log."}`);
     }
 
     res.json({
@@ -273,9 +416,69 @@ router.post("/send-email", async (req, res) => {
         sent: result.sent,
         failed: result.failed,
         message: result.failed
-            ? `Sent to ${result.sent} of ${recipients.length} recipients. ${result.failed} failed (see the server log).`
+            ? `Sent to ${result.sent} of ${people.length} recipients. ${result.failed} failed: see Email history.`
             : `Email sent to ${result.sent} recipient${result.sent === 1 ? "" : "s"}.`
     });
+
+});
+
+/* ============================================================
+   EMAIL HISTORY
+   GET /api/admin/email-history?type=all|admin|automatic&q=...&before=<date>
+   Newest first, 30 at a time; pass the last entry's date as "before" for more.
+============================================================ */
+
+router.get("/email-history", async (req, res) => {
+
+    const filter = {};
+
+    if (req.query.type === "admin") filter.kind = "admin";
+    if (req.query.type === "automatic") filter.kind = { $ne: "admin" };
+    if (req.query.type === "problems") filter.status = { $in: ["failed", "partial", "skipped"] };
+
+    const before = new Date(String(req.query.before || ""));
+
+    if (!Number.isNaN(before.getTime())) filter.createdAt = { $lt: before };
+
+    const q = typeof req.query.q === "string" ? req.query.q.trim().toLowerCase().slice(0, 100) : "";
+
+    // searching is done here (not in the database) so it runs the same on any MongoDB-compatible database
+    const pageSize = 30;
+
+    let items = [];
+    let cursorDate = filter.createdAt;
+    let more = false;
+
+    for (let round = 0; round < 20; round++) {
+
+        const batch = await EmailLog.find(cursorDate ? { ...filter, createdAt: cursorDate } : filter)
+            .sort({ createdAt: -1 })
+            .limit(200)
+            .lean();
+
+        const matching = q
+            ? batch.filter((e) => [e.subject, e.toLabel, e.orderId, e.template?.name, ...(e.recipients || [])].some((v) => String(v || "").toLowerCase().includes(q)))
+            : batch;
+
+        items.push(...matching);
+
+        if (items.length > pageSize) {
+            more = true;
+            break;
+        }
+
+        if (batch.length < 200) break;
+
+        cursorDate = { $lt: batch[batch.length - 1].createdAt };
+
+    }
+
+    if (items.length > pageSize) {
+        items = items.slice(0, pageSize);
+        more = true;
+    }
+
+    res.json({ success: true, items, more });
 
 });
 
