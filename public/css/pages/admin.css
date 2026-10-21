@@ -547,3 +547,51 @@ dialog.sheet.wide {
     }
 
 }
+
+/* ---------- delivery ---------- */
+
+.orderItems li.deliveryLine {
+    color: var(--muted);
+}
+
+.zoneTag {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 1px 8px;
+    border-radius: 6px;
+    background: var(--gold-soft);
+    color: var(--gold-dark);
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.feeGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.feeGrid .areas {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: .8rem;
+    line-height: 1.4;
+}
+
+.feeInput {
+    position: relative;
+}
+
+.feeInput span {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    color: var(--muted);
+    transform: translateY(-50%);
+}
+
+.feeInput .form-control {
+    padding-left: 30px;
+}

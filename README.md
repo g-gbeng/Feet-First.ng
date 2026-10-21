@@ -26,6 +26,22 @@ Paystack also calls the webhook when a payment succeeds, so an order is still ma
 
 Customers see their orders in **My Orders** (`orders.html`), with a **Pay now** button for unpaid ones. If a customer starts a new checkout without paying the previous one, the old unpaid order is set aside (it comes back automatically if it's paid after all).
 
+## Delivery fees
+
+At checkout the customer chooses their delivery area, grouped by zone, and that zone's fee is added to the total before they pay:
+
+| Zone | Default fee | Areas (examples) |
+| --- | --- | --- |
+| Lagos Mainland | ₦3,000 | Ikeja, Yaba, Surulere, Gbagada, Festac... |
+| Lagos Island | ₦5,000 | Victoria Island, Ikoyi, Lekki, Ajah... |
+| Lagos outskirts | ₦6,000 | Badagry, Epe, Ikorodu, Ibeju-Lekki... |
+
+Each zone also has an "Another area" choice for places that aren't listed.
+
+- Change the fees in the admin dashboard under **Delivery fees**. New fees apply to new checkouts; orders already placed keep the fee they were placed with. A fee of ₦0 means free delivery.
+- To add, remove or move areas, edit the lists in `services/delivery.js`.
+- The server works out the fee from the area, so changing the price in the browser has no effect. Orders store the items subtotal, the delivery area and fee, and the total charged.
+
 ## The admin dashboard
 
 - **To fulfil** lists paid orders. Mark one *shipped* with the rider's name and number (the customer gets an email with them), then *delivered* (the customer gets a thank-you email).

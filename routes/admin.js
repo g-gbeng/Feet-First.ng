@@ -18,6 +18,7 @@ const adminAuth = require("../middleware/adminAuth");
 const rateLimit = require("../middleware/rateLimit");
 
 const email = require("../services/email");
+const delivery = require("../services/delivery");
 
 const { HttpError, signIn, signOut, text, isObjectId, EMAIL, normalisePhone } = require("../utils/http");
 
@@ -86,6 +87,8 @@ function adminView(o) {
         address: o.address || "",
         note: o.note || "",
         items: (o.items || []).map((i) => ({ name: i.name, size: i.size, qty: i.qty, price: i.price, image: i.image })),
+        subtotal: o.subtotal ?? ((o.total || 0) - (o.delivery?.fee || 0)),
+        delivery: o.delivery?.zone ? { zoneLabel: o.delivery.zoneLabel, area: o.delivery.area, fee: o.delivery.fee } : null,
         total: o.total || 0,
         status: o.status,
         paymentStatus: o.paymentStatus,
@@ -228,6 +231,27 @@ router.delete("/orders/:id", async (req, res) => {
     await order.deleteOne();
 
     res.json({ success: true, message: "Order deleted." });
+
+});
+
+/* ============================================================
+   DELIVERY FEES
+   GET /api/admin/delivery-fees  ->  zones with their current fee
+   PUT /api/admin/delivery-fees  { mainland, island, outskirts }
+   New fees apply to new checkouts; orders already placed keep their fee.
+============================================================ */
+
+router.get("/delivery-fees", async (req, res) => {
+
+    res.json({ success: true, zones: await delivery.options() });
+
+});
+
+router.put("/delivery-fees", async (req, res) => {
+
+    await delivery.saveFees(req.body);
+
+    res.json({ success: true, zones: await delivery.options() });
 
 });
 

@@ -63,6 +63,24 @@
     color: var(--muted);
 }
 
+.costRows {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: .95rem;
+}
+
+.costRows div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 3px 0;
+}
+
+.costRows #orderDelivery.pending {
+    color: #a15c00;
+    font-weight: 600;
+}
+
 .totalRow {
     display: flex;
     justify-content: space-between;

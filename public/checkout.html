@@ -56,6 +56,15 @@
             </div>
 
             <div class="field mb-3 mt-1">
+                <label class="form-label" for="deliveryArea">Delivery area</label>
+                <select id="deliveryArea" class="form-select" required aria-describedby="deliveryFeeHint">
+                    <option value="">Loading areas...</option>
+                </select>
+                <small class="formHint" id="deliveryFeeHint">Choose the area in Lagos we're delivering to. The delivery fee depends on the area.</small>
+                <small class="fieldError" id="deliveryAreaError"></small>
+            </div>
+
+            <div class="field mb-3">
                 <label class="form-label" for="address">Delivery address</label>
                 <textarea id="address" class="form-control" rows="3" autocomplete="street-address" maxlength="500" placeholder="House number, street, area, city" required></textarea>
                 <small class="fieldError" id="addressError"></small>
@@ -74,6 +83,11 @@
             <h2>Your order</h2>
 
             <div id="orderSummary"><div class="loadingState"><span class="spinner"></span></div></div>
+
+            <div class="costRows">
+                <div><span>Subtotal</span><span id="orderSubtotal">₦0</span></div>
+                <div><span id="deliveryLabel">Delivery</span><span id="orderDelivery">Choose your area</span></div>
+            </div>
 
             <div class="totalRow"><span>Total</span><strong id="orderTotal">₦0</strong></div>
 

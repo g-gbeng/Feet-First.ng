@@ -85,6 +85,8 @@ function itemsTable(order) {
 </tr>`).join("");
 
     return `<table width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 20px;font-size:15px;">${rows}
+${order.delivery?.zone ? `<tr><td style="padding:10px 0 0;color:#555555;">Subtotal</td><td style="padding:10px 0 0;text-align:right;color:#555555;">${money(order.subtotal)}</td></tr>
+<tr><td style="padding:4px 0 0;color:#555555;">Delivery (${esc(order.delivery.area)})</td><td style="padding:4px 0 0;text-align:right;color:#555555;">${money(order.delivery.fee)}</td></tr>` : ""}
 <tr><td style="padding:12px 0 0;font-weight:bold;">Total</td><td style="padding:12px 0 0;text-align:right;font-weight:bold;">${money(order.total)}</td></tr>
 </table>`;
 

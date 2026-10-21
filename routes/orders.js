@@ -15,6 +15,7 @@ const auth = require("../middleware/auth");
 const generateOrderId = require("../utils/generateOrderId");
 
 const { startPayment } = require("../services/orders");
+const delivery = require("../services/delivery");
 
 const { HttpError, text, isObjectId, EMAIL, normalisePhone, publicBase } = require("../utils/http");
 
@@ -42,6 +43,8 @@ function customerView(order) {
         email: o.email,
         address: o.address,
         note: o.note,
+        subtotal: o.subtotal ?? (o.total - (o.delivery?.fee || 0)),
+        delivery: o.delivery?.zone ? { zoneLabel: o.delivery.zoneLabel, area: o.delivery.area, fee: o.delivery.fee } : null,
         total: o.total,
         status: o.status,
         paymentStatus: o.paymentStatus,
@@ -81,6 +84,10 @@ router.post("/checkout", async (req, res) => {
     if (!EMAIL.test(email)) errors.email = "Enter a valid email address for your receipt.";
     if (address.length < 5) errors.address = "Enter your delivery address.";
 
+    const deliveryChoice = await delivery.quote(text(req.body.deliveryZone, 20), text(req.body.deliveryArea, 60));
+
+    if (!deliveryChoice) errors.deliveryArea = "Choose your delivery area.";
+
     if (Object.keys(errors).length) {
         throw new HttpError(400, "Please check the highlighted fields.", { errors });
     }
@@ -95,7 +102,7 @@ router.post("/checkout", async (req, res) => {
 
     const unavailable = [];
 
-    let total = 0;
+    let subtotal = 0;
 
     const items = [];
 
@@ -117,7 +124,7 @@ router.post("/checkout", async (req, res) => {
             continue;
         }
 
-        total += product.price * line.quantity;
+        subtotal += product.price * line.quantity;
 
         items.push({
             product: product._id,
@@ -154,7 +161,9 @@ router.post("/checkout", async (req, res) => {
                 address,
                 note,
                 items,
-                total,
+                subtotal,
+                delivery: deliveryChoice,
+                total: subtotal + deliveryChoice.fee,
                 status: "pending",
                 paymentStatus: "unpaid"
             });
@@ -222,6 +231,13 @@ GET /api/orders/mine
 Orders replaced by a newer checkout are left out.
 =========================================
 */
+
+/* GET /api/orders/delivery-options — zones, fees and areas for the checkout page */
+router.get("/delivery-options", async (req, res) => {
+
+    res.json({ success: true, zones: await delivery.options(), other: delivery.OTHER });
+
+});
 
 router.get("/mine", async (req, res) => {
 

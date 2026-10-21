@@ -62,6 +62,12 @@ function orderCard(order) {
                         <div>${esc(item.name)}<small>Size ${esc(item.size)} × ${esc(item.qty)}</small></div>
                         <span>${money(item.price * item.qty)}</span>
                     </li>`).join("")}
+                ${order.delivery ? `
+                    <li class="deliveryLine">
+                        <span class="truckIcon">${icon("truck")}</span>
+                        <div>Delivery<small>${esc(order.delivery.area)}</small></div>
+                        <span>${order.delivery.fee ? money(order.delivery.fee) : "Free"}</span>
+                    </li>` : ""}
             </ul>
 
             <div class="orderBottom">

@@ -33,6 +33,7 @@
     <nav class="sectionNav" aria-label="Dashboard sections">
         <a href="#ordersTitle">Orders</a>
         <a href="#usersTitle">Customers</a>
+        <a href="#feesTitle">Delivery fees</a>
         <a href="#emailTitle">Send email</a>
         <a href="#templatesTitle">Templates</a>
         <a href="#historyTitle">Email history</a>
@@ -131,6 +132,25 @@
         </div>
 
     </div>
+
+    <!-- ================= DELIVERY FEES ================= -->
+
+    <section class="sectionCard" aria-labelledby="feesTitle">
+
+        <div class="sectionHead">
+            <div>
+                <h2 id="feesTitle">Delivery fees</h2>
+                <p class="sectionSub">Added to the order total at checkout, based on the customer's area. New fees apply to new orders only.</p>
+            </div>
+        </div>
+
+        <form id="feesForm" novalidate>
+            <div class="feeGrid" id="feeGrid"><div class="loadingState"><span class="spinner"></span></div></div>
+            <p class="formNotice" id="feesNotice" hidden></p>
+            <button type="submit" class="btn btn-gold" id="saveFeesBtn">Save delivery fees</button>
+        </form>
+
+    </section>
 
     <!-- ================= EMAIL TEMPLATES ================= -->
 

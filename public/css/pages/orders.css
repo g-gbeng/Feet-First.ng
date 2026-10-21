@@ -144,6 +144,17 @@
     color: var(--muted);
 }
 
+.orderItems .deliveryLine .truckIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 42px;
+    border-radius: 8px;
+    background: #fafafa;
+    color: var(--muted);
+}
+
 .orderBottom {
     display: flex;
     flex-wrap: wrap;

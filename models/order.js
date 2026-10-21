@@ -52,7 +52,17 @@ const orderSchema = new mongoose.Schema(
             }
         ],
 
-        // in naira, worked out on the server from the database prices
+        // in naira, worked out on the server from the database prices:
+        // subtotal (the shoes) + delivery fee = total (what the customer pays)
+        subtotal: Number,
+
+        delivery: {
+            zone: String, // mainland | island | outskirts
+            zoneLabel: String,
+            area: String,
+            fee: Number
+        },
+
         total: Number,
 
         status: {

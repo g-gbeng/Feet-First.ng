@@ -163,7 +163,7 @@ function orderCard(o) {
                 <div><strong>Customer</strong>${esc(o.name)}</div>
                 <div><strong>Phone</strong>${o.phone ? `<a href="tel:${esc(o.phone)}">${esc(o.phone)}</a>` : "—"}</div>
                 <div class="wide"><strong>Email</strong>${o.email ? `<a href="mailto:${esc(o.email)}">${esc(o.email)}</a>` : "—"}</div>
-                <div class="wide"><strong>Address</strong>${esc(o.address || "—")}</div>
+                <div class="wide"><strong>Address</strong>${esc(o.address || "—")}${o.delivery ? `<br><span class="zoneTag">${esc(o.delivery.zoneLabel)}</span>` : ""}</div>
                 ${o.note ? `<div class="wide"><strong>Note</strong>${esc(o.note)}</div>` : ""}
             </div>
 
@@ -171,6 +171,7 @@ function orderCard(o) {
 
             <ul class="orderItems">
                 ${o.items.map((i) => `<li><span>${esc(i.name)} · size ${esc(i.size)} × ${esc(i.qty)}</span><span>${money(i.price * i.qty)}</span></li>`).join("")}
+                ${o.delivery ? `<li class="deliveryLine"><span>Delivery · ${esc(o.delivery.area)}</span><span>${o.delivery.fee ? money(o.delivery.fee) : "Free"}</span></li>` : ""}
             </ul>
 
             <div class="orderBottom">
@@ -496,6 +497,83 @@ emailForm.addEventListener("submit", async (e) => {
         setBusy(button, false);
 
         loadHistory();
+
+    }
+
+});
+
+/* ---------- delivery fees ---------- */
+
+const feesForm = document.getElementById("feesForm");
+const feeGrid = document.getElementById("feeGrid");
+const feesNotice = document.getElementById("feesNotice");
+
+let feeZones = [];
+
+function renderFees() {
+
+    feeGrid.innerHTML = feeZones.map((zone) => `
+        <div class="field">
+            <label class="form-label fw-semibold" for="fee-${esc(zone.id)}">${esc(zone.label)}</label>
+            <div class="feeInput">
+                <span aria-hidden="true">₦</span>
+                <input type="number" id="fee-${esc(zone.id)}" class="form-control" min="0" step="100" inputmode="numeric" value="${esc(zone.fee)}" required>
+            </div>
+            <small class="areas">${esc(zone.areas.slice(0, 6).join(", "))}${zone.areas.length > 6 ? `, and ${zone.areas.length - 6} more` : ""}</small>
+        </div>`).join("");
+
+}
+
+async function loadFees() {
+
+    try {
+        feeZones = (await api("/api/admin/delivery-fees")).zones;
+        renderFees();
+    } catch (err) {
+        feeGrid.innerHTML = `<div class="emptyState">Couldn't load delivery fees: ${esc(err.message)}</div>`;
+    }
+
+}
+
+feesForm.addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
+    const button = document.getElementById("saveFeesBtn");
+
+    const body = {};
+
+    for (const zone of feeZones) body[zone.id] = Number(document.getElementById(`fee-${zone.id}`).value);
+
+    feesNotice.hidden = true;
+    feesNotice.classList.remove("ok");
+
+    if (Object.values(body).some((v) => !Number.isInteger(v) || v < 0)) {
+        feesNotice.textContent = "Enter each fee as a whole naira amount (0 or more).";
+        feesNotice.hidden = false;
+        return;
+    }
+
+    setBusy(button, true, "Saving...");
+
+    try {
+
+        feeZones = (await api("/api/admin/delivery-fees", { method: "PUT", body })).zones;
+
+        renderFees();
+
+        feesNotice.textContent = "Delivery fees saved. New checkouts use them straight away.";
+        feesNotice.classList.add("ok");
+        feesNotice.hidden = false;
+
+    } catch (err) {
+
+        feesNotice.textContent = err.message;
+        feesNotice.hidden = false;
+
+    } finally {
+
+        setBusy(button, false);
 
     }
 
@@ -836,6 +914,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
 
 load().then(() => {
 
+    loadFees();
     loadTemplates();
     loadHistory();
 
