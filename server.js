@@ -7,6 +7,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 
 const { env, checkEnv } = require("./config/env");
+const website = require("./config/website");
 
 checkEnv();
 
@@ -32,6 +33,9 @@ if (env.isProduction) app.set("trust proxy", 1);
 
 app.disable("x-powered-by");
 
+// Requests forwarded by the website on Vercel: trust the visitor's real IP (see config/website.js)
+app.use(website.fromWebsite(env.proxySecret));
+
 app.use((req, res, next) => {
     res.set("X-Content-Type-Options", "nosniff");
     res.set("Referrer-Policy", "strict-origin-when-cross-origin");
@@ -56,7 +60,11 @@ app.use(cookieParser());
 */
 function sameSite(origin, req) {
     try {
-        return origin === env.publicUrl || new URL(origin).host === req.get("host");
+        const host = new URL(origin).host;
+        return origin === env.publicUrl
+            || host === req.get("host")
+            // the website on Vercel forwarding the request (checked with PROXY_SECRET)
+            || (req.viaWebsite && host === String(req.get("x-forwarded-host") || "").split(",")[0].trim());
     } catch {
         return false;
     }
@@ -83,12 +91,15 @@ app.use("/api", (req, res, next) => {
 
 });
 
-/* -------------------- STATIC FILES --------------------
+/* -------------------- WEBSITE PAGES --------------------
+   The pages live in the "Feet-First.ng Frontend" folder (hosted on Vercel online).
+   This server shows them when it can find them (on your computer, or the old
+   "public" folder); otherwise page visits go to PUBLIC_URL. See config/website.js.
    Large photos: browsers that support WebP get the smaller .webp copy of a
    .jpg/.png when one exists next to it. */
-const publicDir = path.join(__dirname, "public");
+const publicDir = website.findFrontend(__dirname);
 
-app.get(/^\/images\/[^/]+\.(jpe?g|png)$/i, (req, res, next) => {
+if (publicDir) app.get(/^\/images\/[^/]+\.(jpe?g|png)$/i, (req, res, next) => {
 
     if (!/image\/webp/.test(req.get("accept") || "")) return next();
 
@@ -108,7 +119,7 @@ app.get(/^\/images\/[^/]+\.(jpe?g|png)$/i, (req, res, next) => {
 
 });
 
-app.use(express.static(publicDir, {
+if (publicDir) app.use(express.static(publicDir, {
 
     setHeaders(res, filePath) {
 
@@ -122,6 +133,8 @@ app.use(express.static(publicDir, {
     }
 
 }));
+
+if (!publicDir) app.use(website.pagesElsewhere(env.publicUrl));
 
 /* -------------------- ROUTES -------------------- */
 app.use("/api/users", userRoutes);
@@ -179,6 +192,10 @@ async function start() {
     app.listen(env.port, () => {
 
         console.log(`Server running on http://localhost:${env.port}`);
+
+        console.log(publicDir
+            ? `Website pages from: ${publicDir}`
+            : `No website pages here: page visits go to ${env.publicUrl || "(set PUBLIC_URL)"}. API only.`);
 
         if (paystack.isTestMode()) {
             console.log("Paystack test mode: payments are simulated and no money moves. Add PAYSTACK_SECRET_KEY to .env for real checkout.");

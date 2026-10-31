@@ -5,6 +5,7 @@
 const jwt = require("jsonwebtoken");
 
 const { env } = require("../config/env");
+const { siteAddress } = require("../config/website");
 
 /* An error with an HTTP status; the error handler in server.js sends its message */
 class HttpError extends Error {
@@ -83,7 +84,7 @@ function normalisePhone(value) {
 
 /* The address customers use to reach the site (for the Paystack return link) */
 function publicBase(req) {
-    return env.publicUrl || `${req.protocol}://${req.get("host")}`;
+    return siteAddress(req, env.publicUrl);
 }
 
 module.exports = {

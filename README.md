@@ -118,3 +118,36 @@ The background photos have smaller `.webp` copies next to them in `public/images
 - `npm run seed:products:fresh` deletes every product and loads the list from scratch. Past orders keep their own copy of each item's name, price and photo, so they're unaffected. Customers' carts and saved items are emptied.
 
 Both work on the database in `MONGO_URI`, so check which one that is before running them.
+
+## Website on Vercel (frontend and backend split)
+
+The website's pages now live in their own folder, **Feet-First.ng Frontend**, next to this backend folder
+(like TomTam). That folder is its own GitHub repo, hosted on Vercel, and forwards `/api/...` here.
+`config/website.js` decides where the pages come from:
+
+1. `FRONTEND_DIR` in `.env`, if set.
+2. **Feet-First.ng Frontend** next to this folder. On your computer, `npm run dev` therefore still shows
+   the whole site at one address, exactly as before. Edit the pages there.
+3. The old `public` folder in this backend. Render keeps using it until you delete it.
+4. None of them (online, after `public` is deleted): opening a page on the Render address sends
+   the visitor to the same page on `PUBLIC_URL` (the Vercel site), so old links keep working.
+   `/api/...` keeps working on Render.
+
+Requests forwarded by Vercel carry `PROXY_SECRET`. For those the backend uses the visitor's real IP
+(for the sign-in attempt limits) and the website's address.
+
+**Switching over, in order (the live site keeps working throughout):**
+
+1. Push this backend (it still has `public`, so Render carries on as before).
+2. On Render, add `PROXY_SECRET`: a long random value, e.g. from
+   `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
+3. Put **Feet-First.ng Frontend** on GitHub (VS Code: Source Control > Publish to GitHub) and import it
+   in Vercel. Add `BACKEND_URL` (this Render address) and the same `PROXY_SECRET`. Test the
+   Vercel address: browse, sign in, and use the API.
+4. On Render, set `PUBLIC_URL` to the Vercel address (e.g. `https://feetfirst.vercel.app`), or your own domain once
+   it points at Vercel.
+   - **Paystack:** the return link after paying uses `PUBLIC_URL`, so customers come back to the
+     Vercel site. Leave the webhook in Paystack pointing at the Render address
+     (`https://YOUR-RENDER-ADDRESS/api/payments/webhook`); it doesn't need to change.
+5. Delete the `public` folder from this backend and push. From then on Render only serves the
+   API, and old Render page links go to the Vercel site.

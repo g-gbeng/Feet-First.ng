@@ -20,6 +20,10 @@ const env = {
     // Leave empty locally; it's worked out from each request.
     publicUrl: (process.env.PUBLIC_URL || "").replace(/\/$/, ""),
 
+    // Shared with the website on Vercel (same value there). Requests carrying it come
+    // from the website, so the visitor's real IP is used. Leave empty locally.
+    proxySecret: process.env.PROXY_SECRET || "",
+
     // Emails through Brevo's email API (https://www.brevo.com), over HTTPS, so it also
     // works on hosts that block email ports (e.g. Render's free plan).
     // Without a key, emails are skipped. EMAIL_FROM must be a sender verified in Brevo.
